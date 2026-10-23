@@ -8,7 +8,9 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -17,12 +19,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import app.premiumhefz.ui.theme.Emerald100
+import app.premiumhefz.ui.theme.Emerald300
 import app.premiumhefz.ui.theme.Emerald500
 import app.premiumhefz.ui.theme.Emerald600
+import app.premiumhefz.ui.theme.Emerald800
 import app.premiumhefz.ui.theme.Emerald850
+import app.premiumhefz.ui.theme.Emerald900
 import app.premiumhefz.ui.theme.Emerald950
 import app.premiumhefz.ui.theme.Gold400
 import app.premiumhefz.ui.theme.Gold500
@@ -269,23 +275,143 @@ private fun ContinueCard(lastPage: Int?, index: QuranIndex, onContinue: (Int) ->
                 color = Emerald100.copy(alpha = 0.8f)
             )
             Spacer(Modifier.height(18.dp))
-            Button(
-                onClick = { onContinue(page) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gold500,
-                    contentColor = Emerald950
-                ),
-                shape = RoundedCornerShape(50)
-            ) {
-                Text(stringResource(if (lastPage == null) R.string.home_start_button else R.string.home_resume))
-                Spacer(Modifier.width(6.dp))
+            ResumeButton(
+                text = stringResource(if (lastPage == null) R.string.home_start_button else R.string.home_resume),
+                onClick = { onContinue(page) }
+            )
+        }
+    }
+}
+
+/**
+ * The Resume call-to-action, modelled on Aceternity's NoiseBackground button:
+ * an animated noise-gradient rim flows around a solid deep-emerald pill.
+ * The rim keeps the app's palette (gold, warm gold, teal-emerald) in place of
+ * the web demo's pink/blue, and moves on short 5–7 s cycles so the flow is
+ * clearly visible — unlike the card behind it, which stays near-still.
+ */
+@Composable
+private fun ResumeButton(text: String, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(50)
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        modifier = Modifier
+            .shadow(
+                elevation = 12.dp,
+                shape = shape,
+                ambientColor = Gold500.copy(alpha = 0.5f),
+                spotColor = Gold500.copy(alpha = 0.5f)
+            )
+            .clip(shape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                role = Role.Button,
+                onClick = onClick
+            )
+    ) {
+        ButtonNoiseGradient(Modifier.matchParentSize())
+        Box(
+            modifier = Modifier
+                .padding(4.dp)
+                .clip(shape)
+                .background(
+                    brush = Brush.linearGradient(listOf(Emerald950, Emerald900)),
+                    shape = shape
+                )
+                .padding(horizontal = 24.dp, vertical = 13.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Ivory50
+                )
+                Spacer(Modifier.width(8.dp))
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
+                    tint = Gold400,
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ButtonNoiseGradient(modifier: Modifier = Modifier) {
+    val noise = remember { createNoiseBitmap() }
+    val transition = rememberInfiniteTransition(label = "resumeButton")
+    val driftA by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(5_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "btnDriftA"
+    )
+    val driftB by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(7_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "btnDriftB"
+    )
+    val grainShift by transition.animateFloat(
+        initialValue = -10f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(tween(6_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "btnGrainShift"
+    )
+    Canvas(modifier) {
+        drawRect(color = Emerald800)
+        val centerA = Offset(
+            size.width * (0.02f + 0.55f * driftA),
+            size.height * (0.15f + 0.70f * driftB)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Gold500.copy(alpha = 0.65f), Color.Transparent),
+                center = centerA,
+                radius = size.maxDimension * 0.75f
+            ),
+            radius = size.maxDimension * 0.75f,
+            center = centerA
+        )
+        val centerB = Offset(
+            size.width * (0.98f - 0.55f * driftB),
+            size.height * (0.85f - 0.70f * driftA)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Emerald300.copy(alpha = 0.55f), Color.Transparent),
+                center = centerB,
+                radius = size.maxDimension * 0.75f
+            ),
+            radius = size.maxDimension * 0.75f,
+            center = centerB
+        )
+        val centerC = Offset(
+            size.width * (0.50f + 0.30f * driftB),
+            size.height * (1.05f - 0.35f * driftA)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Color(0xFFFFC864).copy(alpha = 0.5f), Color.Transparent),
+                center = centerC,
+                radius = size.maxDimension * 0.6f
+            ),
+            radius = size.maxDimension * 0.6f,
+            center = centerC
+        )
+        val slack = 40
+        drawImage(
+            image = noise,
+            dstOffset = IntOffset(
+                -slack / 2 + grainShift.roundToInt(),
+                -slack / 2 + (driftA * 8f).roundToInt()
+            ),
+            dstSize = IntSize(size.width.toInt() + slack, size.height.toInt() + slack),
+            alpha = 0.08f
+        )
     }
 }
 
