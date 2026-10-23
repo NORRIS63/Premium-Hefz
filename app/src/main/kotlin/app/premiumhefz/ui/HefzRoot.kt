@@ -33,11 +33,16 @@ fun HefzRoot() {
             // Saved across rotation, so the opening animation plays once per launch and never when the
             // user comes back from another screen.
             var introDone by rememberSaveable { mutableStateOf(false) }
+            var welcomePlayed by rememberSaveable { mutableStateOf(false) }
+            val reducedMotion = settings.reduceMotion || systemReducedMotion
             Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-                AppNavigation()
+                AppNavigation(
+                    showWelcome = introDone && !welcomePlayed && !reducedMotion,
+                    onWelcomeStarted = { welcomePlayed = true }
+                )
                 if (!introDone) {
                     StartupOverlay(
-                        reducedMotion = settings.reduceMotion || systemReducedMotion,
+                        reducedMotion = reducedMotion,
                         onFinished = { introDone = true }
                     )
                 }

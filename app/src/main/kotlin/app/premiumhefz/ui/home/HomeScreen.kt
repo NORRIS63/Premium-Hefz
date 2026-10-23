@@ -89,6 +89,7 @@ import app.premiumhefz.ui.appViewModel
 import app.premiumhefz.ui.components.GoldProgress
 import app.premiumhefz.ui.components.QuickTile
 import app.premiumhefz.ui.components.StarWatermark
+import app.premiumhefz.ui.components.WelcomeRibbon
 import app.premiumhefz.ui.theme.brand
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -129,12 +130,15 @@ fun HomeScreen(
     onContinue: (Int) -> Unit,
     onOpenBrowse: (Int) -> Unit,
     onOpenBookmarks: () -> Unit,
-    onImportPages: () -> Unit
+    onImportPages: () -> Unit,
+    showWelcome: Boolean = false,
+    onWelcomeStarted: () -> Unit = {}
 ) {
     val index = LocalContainer.current.quranIndex
     val vm: HomeViewModel = appViewModel { HomeViewModel(it.repository, it.pagePack) }
     val state by vm.state.collectAsStateWithLifecycle()
 
+    Box(Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -170,6 +174,11 @@ fun HomeScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
+    }
+    if (showWelcome) {
+        LaunchedEffect(Unit) { onWelcomeStarted() }
+        WelcomeRibbon(Modifier.fillMaxSize())
+    }
     }
 }
 
