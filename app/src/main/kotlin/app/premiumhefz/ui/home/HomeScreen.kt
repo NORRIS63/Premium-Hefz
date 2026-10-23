@@ -351,19 +351,19 @@ private fun ButtonNoiseGradient(modifier: Modifier = Modifier) {
     val driftAState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(5_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(2_600, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftA"
     )
     val driftBState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(7_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(3_600, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftB"
     )
     val grainState = transition.animateFloat(
         initialValue = -10f,
         targetValue = 10f,
-        animationSpec = infiniteRepeatable(tween(6_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(3_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnGrainShift"
     )
     // Hold still while the startup animation plays, then advance in fine
@@ -442,27 +442,27 @@ private fun NoiseGradientBackground(modifier: Modifier = Modifier) {
     val driftAState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(16_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(7_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "driftA"
     )
     val driftBState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(21_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(9_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "driftB"
     )
     val grainState = transition.animateFloat(
         initialValue = -14f,
         targetValue = 14f,
-        animationSpec = infiniteRepeatable(tween(12_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(6_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "grainShift"
     )
     // Same treatment as the button: still during the startup animation,
     // then coarse steps (a redraw every few hundred ms, not every frame).
     var started by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(1500); started = true }
-    val driftA by remember { derivedStateOf { if (started) (driftAState.value * 36f).roundToInt() / 36f else 0.30f } }
-    val driftB by remember { derivedStateOf { if (started) (driftBState.value * 36f).roundToInt() / 36f else 0.55f } }
+    val driftA by remember { derivedStateOf { if (started) (driftAState.value * 60f).roundToInt() / 60f else 0.30f } }
+    val driftB by remember { derivedStateOf { if (started) (driftBState.value * 60f).roundToInt() / 60f else 0.55f } }
     val grainShift by remember { derivedStateOf { if (started) (grainState.value * 2f).roundToInt() / 2f else 0f } }
     Canvas(modifier) {
         drawRect(
