@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PremiumHefz" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/emerald_900</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Shown by the system before the first frame: plain emerald, no icon, so the Compose opening
+         animation can take over on the same colour. -->
+    <style name="Theme.PremiumHefz.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/emerald_900</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_empty</item>
+        <item name="postSplashScreenTheme">@style/Theme.PremiumHefz</item>
+    </style>
+</resources>

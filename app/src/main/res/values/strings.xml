@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Premium Hefz</string>
+    <string name="startup_wordmark">Hefz Quran</string>
+
+    <!-- Common -->
+    <string name="nav_home">Home</string>
+    <string name="nav_browse">Browse</string>
+    <string name="nav_bookmarks">Bookmarks</string>
+    <string name="nav_settings">Settings</string>
+    <string name="cd_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_import">Import</string>
+
+    <!-- Home -->
+    <string name="home_continue">Continue reading</string>
+    <string name="home_start">Start reading</string>
+    <string name="home_resume">Resume</string>
+    <string name="home_start_button">Open the first page</string>
+    <string name="home_page_juz_fmt">Page %1$d · Juz %2$d, page %3$d</string>
+    <string name="home_page_only_fmt">Page %1$d · Opening page</string>
+    <string name="home_today">Today</string>
+    <string name="home_goal_fmt">%1$d of %2$d pages read</string>
+    <string name="home_goal_done">Daily goal reached</string>
+    <string name="home_streak_fmt">%1$d-day streak</string>
+    <string name="home_streak_none">Read a page to start a streak</string>
+    <string name="home_quick_read">Read Quran</string>
+    <string name="home_quick_bookmarks">Bookmarks</string>
+    <string name="home_quick_goto">Go to page</string>
+    <string name="home_offline_ready">Offline · %1$d pages</string>
+    <string name="home_offline_partial">%1$d of %2$d pages on this device</string>
+    <string name="home_pack_missing_title">Add the Quran pages</string>
+    <string name="home_pack_missing_body">The pages are kept on this device so reading never needs a connection. Import them once from your Hefz Quran APK.</string>
+    <string name="home_pack_partial_body">%1$d of %2$d pages are on this device. Import again to add the rest.</string>
+    <string name="home_pack_action">Import pages</string>
+
+    <!-- Reader -->
+    <string name="reader_subtitle_fmt">Page %1$d · Juz %2$d, page %3$d</string>
+    <string name="reader_subtitle_opening_fmt">Page %1$d · Opening page</string>
+    <string name="reader_go_to">Go to</string>
+    <string name="cd_bookmark_add">Bookmark this page</string>
+    <string name="cd_bookmark_remove">Remove bookmark</string>
+    <string name="cd_quran_page_fmt">Quran page %1$d</string>
+    <string name="reader_bookmarked_fmt">Bookmarked page %1$d</string>
+    <string name="reader_bookmark_removed_fmt">Removed the bookmark on page %1$d</string>
+    <string name="reader_missing_title_fmt">Page %1$d isn’t on this device</string>
+    <string name="reader_missing_body">Import the Quran pages to read offline.</string>
+
+    <!-- Browse -->
+    <string name="browse_tab_surah">Surah</string>
+    <string name="browse_tab_juz">Juz</string>
+    <string name="browse_tab_page">Page</string>
+    <string name="browse_search_hint">Search surah name or number</string>
+    <string name="browse_no_results">No surah matches “%1$s”</string>
+    <string name="browse_no_results_body">Try part of the name, or the surah number.</string>
+    <string name="surah_meta_fmt">%1$d ayahs · %2$s</string>
+    <string name="surah_page_fmt">p. %1$d</string>
+    <string name="juz_title_fmt">Juz %1$d</string>
+    <string name="juz_meta_fmt">Page %1$d · %2$d pages</string>
+
+    <!-- Go to page -->
+    <string name="goto_title">Go to page</string>
+    <string name="goto_mode_page">Page</string>
+    <string name="goto_mode_juz">Juz and page</string>
+    <string name="goto_page_hint">Page number</string>
+    <string name="goto_page_helper">Use the number printed on the page, from 2 to 611.</string>
+    <string name="goto_juz_hint">Juz (1–30)</string>
+    <string name="goto_juz_page_hint">Page in juz</string>
+    <string name="goto_juz_helper">The page in the juz is counted from 1, as printed at the top of each page.</string>
+    <string name="goto_error_page">Enter a page from 2 to 611.</string>
+    <string name="goto_error_juz">Enter a juz from 1 to 30 and a page that exists in it.</string>
+    <string name="goto_open">Open page</string>
+
+    <!-- Bookmarks -->
+    <string name="bookmarks_title">Bookmarks</string>
+    <string name="bookmarks_empty_title">No bookmarks yet</string>
+    <string name="bookmarks_empty_body">Tap the bookmark icon in the reader, or press and hold a page, to save your place.</string>
+    <string name="bookmark_subtitle_fmt">Page %1$d · Juz %2$d, page %3$d · %4$s</string>
+    <string name="bookmark_subtitle_opening_fmt">Page %1$d · Opening page · %2$s</string>
+    <string name="bookmark_delete_title">Delete bookmark?</string>
+    <string name="bookmark_delete_body_fmt">Remove the bookmark on page %1$d?</string>
+    <string name="import_title">Import bookmarks</string>
+    <string name="import_body">The old app keeps its bookmarks in private storage, so they can’t be copied across automatically. Type or paste them here, one per line.</string>
+    <string name="import_mode_printed">Page number printed on the page</string>
+    <string name="import_mode_juz">Juz and page, as on the old Bookmarks screen (for example 3 9)</string>
+    <string name="import_mode_goto">Number typed into the old Go To Page screen</string>
+    <string name="import_mode_stored">Raw saved entries (for example 52_Oct 12, 2026)</string>
+    <string name="import_input_hint">One bookmark per line</string>
+    <string name="import_preview_fmt">%1$d ready to import, %2$d lines skipped</string>
+    <string name="imported_fmt">Imported %1$d bookmarks</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_page_tone">Page tone</string>
+    <string name="tone_auto">Auto</string>
+    <string name="tone_original">Original</string>
+    <string name="tone_paper">Paper</string>
+    <string name="tone_night">Night</string>
+    <string name="settings_page_tone_hint">Changes how pages are drawn on screen. The page images themselves are never altered.</string>
+    <string name="settings_reading">Reading</string>
+    <string name="settings_keep_awake">Keep the screen on while reading</string>
+    <string name="settings_goal">Daily reading goal</string>
+    <string name="settings_goal_fmt">%1$d pages</string>
+    <string name="settings_motion">Motion</string>
+    <string name="settings_reduce_motion">Reduce motion</string>
+    <string name="settings_reduce_motion_hint">Skips the opening animation.</string>
+    <string name="settings_pages">Quran pages</string>
+    <string name="settings_pages_status_fmt">%1$d of %2$d pages on this device</string>
+    <string name="settings_pages_verified">Verified byte for byte against the original</string>
+    <string name="settings_pages_unverified">Not verified yet</string>
+    <string name="settings_import">Import pages</string>
+    <string name="settings_verify">Verify pages</string>
+    <string name="settings_verifying_fmt">Checking page %1$d of %2$d</string>
+    <string name="settings_verify_ok_fmt">All %1$d pages match the original byte for byte.</string>
+    <string name="settings_verify_bad_fmt">%1$d pages don’t match and %2$d are missing. Import again to repair them.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_body">The Quran pages are the original page images from Hefz Quran, kept byte-identical. This app contains no separate Quran text and has no internet permission.</string>
+    <string name="settings_version_fmt">Version %1$s</string>
+
+    <!-- Page import -->
+    <string name="setup_title">Quran pages</string>
+    <string name="setup_body">The pages stay on this device, so reading never needs a connection. Choose where to import them from. Each page is checked against the original before it is kept.</string>
+    <string name="setup_installed">Use the installed Hefz Quran app</string>
+    <string name="setup_choose">Choose an APK or pack file…</string>
+    <string name="setup_working_fmt">Importing… %1$d pages verified</string>
+    <string name="setup_stop">Stop</string>
+    <string name="setup_done_fmt">%1$d pages verified and saved</string>
+    <string name="setup_failed_pages_fmt">%1$d pages didn’t match the original and were skipped.</string>
+    <string name="setup_missing_fmt">%1$d pages weren’t found in that file.</string>
+    <string name="setup_no_space_fmt">Not enough free storage. About %1$d MB are needed.</string>
+    <string name="setup_error">Couldn’t read that file.</string>
+    <string name="setup_not_installed">The original app isn’t installed on this device.</string>
+    <string name="setup_start_reading">Start reading</string>
+</resources>

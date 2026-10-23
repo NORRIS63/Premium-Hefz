@@ -1,0 +1,1102 @@
+{
+ "version": 1,
+ "source": "Recovered from the original app's resource arrays and jump tables. Contains no Quran verse text.",
+ "firstPage": 2,
+ "lastPage": 611,
+ "surahs": [
+  {
+   "n": 1,
+   "en": "Al-Fatiha",
+   "ar": "ٱلْفَاتِحَة",
+   "type": "Makkah",
+   "ayahs": 7,
+   "page": 2
+  },
+  {
+   "n": 2,
+   "en": "Al-Baqarah",
+   "ar": "ٱلْبَقَرَة",
+   "type": "Madinah",
+   "ayahs": 286,
+   "page": 3
+  },
+  {
+   "n": 3,
+   "en": "Al Imran",
+   "ar": "آلِ عِمْرَان",
+   "type": "Madinah",
+   "ayahs": 200,
+   "page": 51
+  },
+  {
+   "n": 4,
+   "en": "An-Nisa",
+   "ar": "ٱلنِّسَاء",
+   "type": "Madinah",
+   "ayahs": 176,
+   "page": 78
+  },
+  {
+   "n": 5,
+   "en": "Al-Ma'idah",
+   "ar": "ٱلْمَائِدَة",
+   "type": "Madinah",
+   "ayahs": 120,
+   "page": 107
+  },
+  {
+   "n": 6,
+   "en": "Al-An'am",
+   "ar": "ٱلْأَنْعَام",
+   "type": "Makkah",
+   "ayahs": 165,
+   "page": 129
+  },
+  {
+   "n": 7,
+   "en": "Al-A'raf",
+   "ar": "ٱلْأَعْرَاف",
+   "type": "Makkah",
+   "ayahs": 206,
+   "page": 152
+  },
+  {
+   "n": 8,
+   "en": "Al-Anfal",
+   "ar": "ٱلْأَنْفَال",
+   "type": "Madinah",
+   "ayahs": 75,
+   "page": 178
+  },
+  {
+   "n": 9,
+   "en": "At-Tawbah",
+   "ar": "ٱلتَّوْبَة",
+   "type": "Madinah",
+   "ayahs": 129,
+   "page": 188
+  },
+  {
+   "n": 10,
+   "en": "Yunus",
+   "ar": "يُونُس",
+   "type": "Makkah",
+   "ayahs": 109,
+   "page": 209
+  },
+  {
+   "n": 11,
+   "en": "Hud",
+   "ar": "هُود",
+   "type": "Makkah",
+   "ayahs": 123,
+   "page": 222
+  },
+  {
+   "n": 12,
+   "en": "Yusuf",
+   "ar": "يُوسُف",
+   "type": "Makkah",
+   "ayahs": 111,
+   "page": 236
+  },
+  {
+   "n": 13,
+   "en": "Ar-Ra'd",
+   "ar": "ٱلرَّعْد",
+   "type": "Madinah",
+   "ayahs": 43,
+   "page": 250
+  },
+  {
+   "n": 14,
+   "en": "Ibrahim",
+   "ar": "إِبْرَاهِيم",
+   "type": "Makkah",
+   "ayahs": 52,
+   "page": 256
+  },
+  {
+   "n": 15,
+   "en": "Al-Hijr",
+   "ar": "ٱلْحِجْر",
+   "type": "Makkah",
+   "ayahs": 99,
+   "page": 262
+  },
+  {
+   "n": 16,
+   "en": "An-Nahl",
+   "ar": "ٱلنَّحْل",
+   "type": "Makkah",
+   "ayahs": 128,
+   "page": 268
+  },
+  {
+   "n": 17,
+   "en": "Al-Isra",
+   "ar": "ٱلْإِسْرَاء",
+   "type": "Makkah",
+   "ayahs": 111,
+   "page": 283
+  },
+  {
+   "n": 18,
+   "en": "Al-Kahf",
+   "ar": "ٱلْكَهْف",
+   "type": "Makkah",
+   "ayahs": 110,
+   "page": 294
+  },
+  {
+   "n": 19,
+   "en": "Maryam",
+   "ar": "مَرْيَم",
+   "type": "Makkah",
+   "ayahs": 98,
+   "page": 306
+  },
+  {
+   "n": 20,
+   "en": "Ta-Ha",
+   "ar": "طه",
+   "type": "Makkah",
+   "ayahs": 135,
+   "page": 313
+  },
+  {
+   "n": 21,
+   "en": "Al-Anbiya",
+   "ar": "ٱلْأَنْبِيَاء",
+   "type": "Makkah",
+   "ayahs": 112,
+   "page": 323
+  },
+  {
+   "n": 22,
+   "en": "Al-Hajj",
+   "ar": "ٱلْحَجّ",
+   "type": "Madinah",
+   "ayahs": 78,
+   "page": 332
+  },
+  {
+   "n": 23,
+   "en": "Al-Mu'minun",
+   "ar": "ٱلْمُؤْمِنُون",
+   "type": "Makkah",
+   "ayahs": 118,
+   "page": 343
+  },
+  {
+   "n": 24,
+   "en": "An-Nur",
+   "ar": "ٱلنُّور",
+   "type": "Madinah",
+   "ayahs": 64,
+   "page": 351
+  },
+  {
+   "n": 25,
+   "en": "Al-Furqan",
+   "ar": "ٱلْفُرْقَان",
+   "type": "Makkah",
+   "ayahs": 77,
+   "page": 360
+  },
+  {
+   "n": 26,
+   "en": "Ash-Shu'ara",
+   "ar": "ٱلشُّعَرَاء",
+   "type": "Makkah",
+   "ayahs": 227,
+   "page": 367
+  },
+  {
+   "n": 27,
+   "en": "An-Naml",
+   "ar": "ٱلنَّمْل",
+   "type": "Makkah",
+   "ayahs": 93,
+   "page": 377
+  },
+  {
+   "n": 28,
+   "en": "Al-Qasas",
+   "ar": "ٱلْقَصَص",
+   "type": "Makkah",
+   "ayahs": 88,
+   "page": 386
+  },
+  {
+   "n": 29,
+   "en": "Al-Ankabut",
+   "ar": "ٱلْعَنْكَبُوت",
+   "type": "Makkah",
+   "ayahs": 69,
+   "page": 397
+  },
+  {
+   "n": 30,
+   "en": "Ar-Rum",
+   "ar": "ٱلرُّوم",
+   "type": "Makkah",
+   "ayahs": 60,
+   "page": 405
+  },
+  {
+   "n": 31,
+   "en": "Luqmaan",
+   "ar": "لُقْمَان",
+   "type": "Makkah",
+   "ayahs": 34,
+   "page": 412
+  },
+  {
+   "n": 32,
+   "en": "As-Sajda",
+   "ar": "ٱلسَّجْدَة",
+   "type": "Makkah",
+   "ayahs": 30,
+   "page": 416
+  },
+  {
+   "n": 33,
+   "en": "Al-Ahzaab",
+   "ar": "ٱلْأَحْزَاب",
+   "type": "Madinah",
+   "ayahs": 73,
+   "page": 419
+  },
+  {
+   "n": 34,
+   "en": "Saba",
+   "ar": "سَبَأ",
+   "type": "Makkah",
+   "ayahs": 54,
+   "page": 429
+  },
+  {
+   "n": 35,
+   "en": "Faatir",
+   "ar": "فَاطِر",
+   "type": "Makkah",
+   "ayahs": 45,
+   "page": 435
+  },
+  {
+   "n": 36,
+   "en": "Ya-Sin",
+   "ar": "يس",
+   "type": "Makkah",
+   "ayahs": 83,
+   "page": 441
+  },
+  {
+   "n": 37,
+   "en": "As-Saaffaat",
+   "ar": "ٱلصَّافَّات",
+   "type": "Makkah",
+   "ayahs": 182,
+   "page": 446
+  },
+  {
+   "n": 38,
+   "en": "Saad",
+   "ar": "ص",
+   "type": "Makkah",
+   "ayahs": 88,
+   "page": 453
+  },
+  {
+   "n": 39,
+   "en": "Az-Zumar",
+   "ar": "ٱلزُّمَر",
+   "type": "Makkah",
+   "ayahs": 75,
+   "page": 459
+  },
+  {
+   "n": 40,
+   "en": "Ghafir",
+   "ar": "غَافِر",
+   "type": "Makkah",
+   "ayahs": 85,
+   "page": 468
+  },
+  {
+   "n": 41,
+   "en": "Fussilat",
+   "ar": "فُصِّلَت",
+   "type": "Makkah",
+   "ayahs": 54,
+   "page": 478
+  },
+  {
+   "n": 42,
+   "en": "Ash_Shooraa",
+   "ar": "ٱلشُّورىٰ",
+   "type": "Makkah",
+   "ayahs": 53,
+   "page": 484
+  },
+  {
+   "n": 43,
+   "en": "Az-Zukhruf",
+   "ar": "ٱلْزُّخْرُف",
+   "type": "Makkah",
+   "ayahs": 89,
+   "page": 490
+  },
+  {
+   "n": 44,
+   "en": "Ad-Dukhaan",
+   "ar": "ٱلدُّخَان",
+   "type": "Makkah",
+   "ayahs": 59,
+   "page": 496
+  },
+  {
+   "n": 45,
+   "en": "Al-Jaathiyah",
+   "ar": "ٱلْجَاثِيَة",
+   "type": "Makkah",
+   "ayahs": 37,
+   "page": 499
+  },
+  {
+   "n": 46,
+   "en": "Al-Ahqaaf",
+   "ar": "ٱلْأَحْقَاف",
+   "type": "Makkah",
+   "ayahs": 35,
+   "page": 503
+  },
+  {
+   "n": 47,
+   "en": "Muhammad",
+   "ar": "مُحَمَّد",
+   "type": "Madinah",
+   "ayahs": 38,
+   "page": 507
+  },
+  {
+   "n": 48,
+   "en": "Al-Fath",
+   "ar": "ٱلْفَتْح",
+   "type": "Madinah",
+   "ayahs": 29,
+   "page": 512
+  },
+  {
+   "n": 49,
+   "en": "Al-Hujuraat",
+   "ar": "ٱلْحُجُرَات",
+   "type": "Madinah",
+   "ayahs": 18,
+   "page": 516
+  },
+  {
+   "n": 50,
+   "en": "Qaaf",
+   "ar": "ق",
+   "type": "Makkah",
+   "ayahs": 45,
+   "page": 519
+  },
+  {
+   "n": 51,
+   "en": "Adh-Dhaariyaat",
+   "ar": "ٱلذَّارِيَات",
+   "type": "Makkah",
+   "ayahs": 60,
+   "page": 521
+  },
+  {
+   "n": 52,
+   "en": "At-Toor",
+   "ar": "ٱلطُّور",
+   "type": "Makkah",
+   "ayahs": 49,
+   "page": 524
+  },
+  {
+   "n": 53,
+   "en": "An-Najm",
+   "ar": "ٱلنَّجْم",
+   "type": "Makkah",
+   "ayahs": 62,
+   "page": 527
+  },
+  {
+   "n": 54,
+   "en": "Al-Qamar",
+   "ar": "ٱلْقَمَر",
+   "type": "Makkah",
+   "ayahs": 55,
+   "page": 529
+  },
+  {
+   "n": 55,
+   "en": "Ar-Rahman",
+   "ar": "ٱلرَّحْمَٰن",
+   "type": "Madinah",
+   "ayahs": 78,
+   "page": 532
+  },
+  {
+   "n": 56,
+   "en": "Al-Waqi'a",
+   "ar": "ٱلْوَاقِعَة",
+   "type": "Makkah",
+   "ayahs": 96,
+   "page": 535
+  },
+  {
+   "n": 57,
+   "en": "Al-Hadeed",
+   "ar": "ٱلْحَدِيد",
+   "type": "Madinah",
+   "ayahs": 29,
+   "page": 538
+  },
+  {
+   "n": 58,
+   "en": "Al-Mujadila",
+   "ar": "ٱلْمُجَادِلَة",
+   "type": "Madinah",
+   "ayahs": 22,
+   "page": 543
+  },
+  {
+   "n": 59,
+   "en": "Al-Hashr",
+   "ar": "ٱلْحَشْر",
+   "type": "Madinah",
+   "ayahs": 24,
+   "page": 546
+  },
+  {
+   "n": 60,
+   "en": "Al-Mumtahanah",
+   "ar": "ٱلْمُمْتَحَنَة",
+   "type": "Madinah",
+   "ayahs": 13,
+   "page": 550
+  },
+  {
+   "n": 61,
+   "en": "As-Saff",
+   "ar": "ٱلصَّفّ",
+   "type": "Madinah",
+   "ayahs": 14,
+   "page": 552
+  },
+  {
+   "n": 62,
+   "en": "Al-Jumu'ah",
+   "ar": "ٱلْجُمُعَة",
+   "type": "Madinah",
+   "ayahs": 11,
+   "page": 554
+  },
+  {
+   "n": 63,
+   "en": "Al-Munafiqoon",
+   "ar": "ٱلْمُنَافِقُون",
+   "type": "Madinah",
+   "ayahs": 11,
+   "page": 555
+  },
+  {
+   "n": 64,
+   "en": "At-Taghabun",
+   "ar": "ٱلتَّغَابُن",
+   "type": "Madinah",
+   "ayahs": 18,
+   "page": 557
+  },
+  {
+   "n": 65,
+   "en": "At-Talaq",
+   "ar": "ٱلطَّلَاق",
+   "type": "Madinah",
+   "ayahs": 12,
+   "page": 559
+  },
+  {
+   "n": 66,
+   "en": "At-Tahreem",
+   "ar": "ٱلتَّحْرِيم",
+   "type": "Madinah",
+   "ayahs": 12,
+   "page": 561
+  },
+  {
+   "n": 67,
+   "en": "Al-Mulk",
+   "ar": "ٱلْمُلْك",
+   "type": "Makkah",
+   "ayahs": 30,
+   "page": 563
+  },
+  {
+   "n": 68,
+   "en": "Al-Qalam",
+   "ar": "ٱلْقَلَم",
+   "type": "Makkah",
+   "ayahs": 52,
+   "page": 565
+  },
+  {
+   "n": 69,
+   "en": "Al-Haaqqa",
+   "ar": "ٱلْحَاقَّة",
+   "type": "Makkah",
+   "ayahs": 52,
+   "page": 568
+  },
+  {
+   "n": 70,
+   "en": "Al-Ma'aarij",
+   "ar": "ٱلْمَعَارِج",
+   "type": "Makkah",
+   "ayahs": 44,
+   "page": 570
+  },
+  {
+   "n": 71,
+   "en": "Nooh",
+   "ar": "نُوح",
+   "type": "Makkah",
+   "ayahs": 28,
+   "page": 572
+  },
+  {
+   "n": 72,
+   "en": "Al-Jinn",
+   "ar": "ٱلْجِنّ",
+   "type": "Makkah",
+   "ayahs": 28,
+   "page": 574
+  },
+  {
+   "n": 73,
+   "en": "Al-Muzzammil",
+   "ar": "ٱلْمُزَّمِّل",
+   "type": "Makkah",
+   "ayahs": 20,
+   "page": 577
+  },
+  {
+   "n": 74,
+   "en": "Al-Muddaththir",
+   "ar": "ٱلْمُدَّثِّر",
+   "type": "Makkah",
+   "ayahs": 56,
+   "page": 579
+  },
+  {
+   "n": 75,
+   "en": "Al-Qiyamah",
+   "ar": "ٱلْقِيَامَة",
+   "type": "Makkah",
+   "ayahs": 40,
+   "page": 581
+  },
+  {
+   "n": 76,
+   "en": "Al-Insaan",
+   "ar": "ٱلْإِنْسَان",
+   "type": "Madinah",
+   "ayahs": 31,
+   "page": 583
+  },
+  {
+   "n": 77,
+   "en": "Al-Mursalaat",
+   "ar": "المرسلات",
+   "type": "Makkah",
+   "ayahs": 50,
+   "page": 585
+  },
+  {
+   "n": 78,
+   "en": "An-Naba'",
+   "ar": "ٱلنَّبَأ",
+   "type": "Makkah",
+   "ayahs": 40,
+   "page": 587
+  },
+  {
+   "n": 79,
+   "en": "An-Naazi'aat",
+   "ar": "ٱلنَّازِعَات",
+   "type": "Makkah",
+   "ayahs": 46,
+   "page": 588
+  },
+  {
+   "n": 80,
+   "en": "Abasa",
+   "ar": "عَبَسَ",
+   "type": "Makkah",
+   "ayahs": 42,
+   "page": 590
+  },
+  {
+   "n": 81,
+   "en": "At-Takweer",
+   "ar": "ٱلتَّكْوِير",
+   "type": "Makkah",
+   "ayahs": 29,
+   "page": 591
+  },
+  {
+   "n": 82,
+   "en": "Al-Infitar",
+   "ar": "ٱلْإِنْفِطَار",
+   "type": "Makkah",
+   "ayahs": 19,
+   "page": 592
+  },
+  {
+   "n": 83,
+   "en": "Al-Mutaffifeen",
+   "ar": "ٱلْمُطَفِّفِين",
+   "type": "Makkah",
+   "ayahs": 36,
+   "page": 593
+  },
+  {
+   "n": 84,
+   "en": "Al-Inshiqaaq",
+   "ar": "ٱلْإِنْشِقَاق",
+   "type": "Makkah",
+   "ayahs": 25,
+   "page": 595
+  },
+  {
+   "n": 85,
+   "en": "Al-Burooj",
+   "ar": "ٱلْبُرُوج",
+   "type": "Makkah",
+   "ayahs": 22,
+   "page": 596
+  },
+  {
+   "n": 86,
+   "en": "At-Taariq",
+   "ar": "ٱلطَّارِق",
+   "type": "Makkah",
+   "ayahs": 17,
+   "page": 597
+  },
+  {
+   "n": 87,
+   "en": "Al-A'laa",
+   "ar": "ٱلْأَعْلَىٰ",
+   "type": "Makkah",
+   "ayahs": 19,
+   "page": 598
+  },
+  {
+   "n": 88,
+   "en": "Al-Ghaashiyah",
+   "ar": "ٱلْغَاشِيَة",
+   "type": "Makkah",
+   "ayahs": 26,
+   "page": 598
+  },
+  {
+   "n": 89,
+   "en": "Al-Fajr",
+   "ar": "ٱلْفَجْر",
+   "type": "Makkah",
+   "ayahs": 30,
+   "page": 599
+  },
+  {
+   "n": 90,
+   "en": "Al-Balad",
+   "ar": "ٱلْبَلَد",
+   "type": "Makkah",
+   "ayahs": 20,
+   "page": 601
+  },
+  {
+   "n": 91,
+   "en": "Ash-Shams",
+   "ar": "ٱلشَّمْس",
+   "type": "Makkah",
+   "ayahs": 15,
+   "page": 601
+  },
+  {
+   "n": 92,
+   "en": "Al-Layl",
+   "ar": "ٱللَّيْل",
+   "type": "Makkah",
+   "ayahs": 21,
+   "page": 602
+  },
+  {
+   "n": 93,
+   "en": "Ad-Dhuha",
+   "ar": "ٱلضُّحَىٰ",
+   "type": "Makkah",
+   "ayahs": 11,
+   "page": 603
+  },
+  {
+   "n": 94,
+   "en": "Ash-Sharh",
+   "ar": "ٱلشَّرْح",
+   "type": "Makkah",
+   "ayahs": 8,
+   "page": 603
+  },
+  {
+   "n": 95,
+   "en": "At-Teen",
+   "ar": "ٱلتِّين",
+   "type": "Makkah",
+   "ayahs": 8,
+   "page": 604
+  },
+  {
+   "n": 96,
+   "en": "Al-Alaq",
+   "ar": "ٱلْعَلَق",
+   "type": "Makkah",
+   "ayahs": 19,
+   "page": 604
+  },
+  {
+   "n": 97,
+   "en": "Al-Qadr",
+   "ar": "ٱلْقَدْر",
+   "type": "Makkah",
+   "ayahs": 5,
+   "page": 605
+  },
+  {
+   "n": 98,
+   "en": "Al-Bayyinahh",
+   "ar": "ٱلْبَيِّنَة",
+   "type": "Madinah",
+   "ayahs": 8,
+   "page": 605
+  },
+  {
+   "n": 99,
+   "en": "Az-Zalzalah",
+   "ar": "ٱلزَّلْزَلَة",
+   "type": "Madinah",
+   "ayahs": 8,
+   "page": 606
+  },
+  {
+   "n": 100,
+   "en": "Al-'Aadiyaat",
+   "ar": "ٱلْعَادِيَات",
+   "type": "Makkah",
+   "ayahs": 11,
+   "page": 606
+  },
+  {
+   "n": 101,
+   "en": "Al-Qaari'ah",
+   "ar": "ٱلْقَارِعَة",
+   "type": "Makkah",
+   "ayahs": 11,
+   "page": 607
+  },
+  {
+   "n": 102,
+   "en": "At-Takaathur",
+   "ar": "ٱلتَّكَاثُر",
+   "type": "Makkah",
+   "ayahs": 8,
+   "page": 607
+  },
+  {
+   "n": 103,
+   "en": "Al-'Asr",
+   "ar": "ٱلْعَصْر",
+   "type": "Makkah",
+   "ayahs": 3,
+   "page": 608
+  },
+  {
+   "n": 104,
+   "en": "Al-Humazah",
+   "ar": "ٱلْهُمَزَة",
+   "type": "Makkah",
+   "ayahs": 9,
+   "page": 608
+  },
+  {
+   "n": 105,
+   "en": "Al-Feel",
+   "ar": "ٱلْفِيل",
+   "type": "Makkah",
+   "ayahs": 5,
+   "page": 608
+  },
+  {
+   "n": 106,
+   "en": "Quraysh",
+   "ar": "قُرَيْش",
+   "type": "Makkah",
+   "ayahs": 4,
+   "page": 609
+  },
+  {
+   "n": 107,
+   "en": "Al-Maa'oon",
+   "ar": "ٱلْمَاعُون",
+   "type": "Makkah",
+   "ayahs": 7,
+   "page": 609
+  },
+  {
+   "n": 108,
+   "en": "Al-Kawthar",
+   "ar": "ٱلْكَوْثَر",
+   "type": "Makkah",
+   "ayahs": 3,
+   "page": 609
+  },
+  {
+   "n": 109,
+   "en": "Al-Kaafiroon",
+   "ar": "ٱلْكَافِرُون",
+   "type": "Makkah",
+   "ayahs": 6,
+   "page": 609
+  },
+  {
+   "n": 110,
+   "en": "An-Nasr",
+   "ar": "ٱلنَّصْر",
+   "type": "Madinah",
+   "ayahs": 3,
+   "page": 610
+  },
+  {
+   "n": 111,
+   "en": "Al-Masad",
+   "ar": "ٱلْمَسَد",
+   "type": "Makkah",
+   "ayahs": 5,
+   "page": 610
+  },
+  {
+   "n": 112,
+   "en": "Al-Ikhlaas",
+   "ar": "ٱلْإِخْلَاص",
+   "type": "Makkah",
+   "ayahs": 4,
+   "page": 610
+  },
+  {
+   "n": 113,
+   "en": "Al-Falaq",
+   "ar": "ٱلْفَلَق",
+   "type": "Makkah",
+   "ayahs": 5,
+   "page": 611
+  },
+  {
+   "n": 114,
+   "en": "An-Naas",
+   "ar": "ٱلنَّاس",
+   "type": "Makkah",
+   "ayahs": 6,
+   "page": 611
+  }
+ ],
+ "juz": [
+  {
+   "n": 1,
+   "en": "Alif Laaam Meeem",
+   "ar": "آلم",
+   "page": 3
+  },
+  {
+   "n": 2,
+   "en": "Sayaqool",
+   "ar": "سَيَقُولُ",
+   "page": 23
+  },
+  {
+   "n": 3,
+   "en": "Tilkarrasul",
+   "ar": "تِلْكَ ٱلْرُّسُلُ",
+   "page": 43
+  },
+  {
+   "n": 4,
+   "en": "Lan Tanaa Loo",
+   "ar": "لَنْ تَنَالُوْ الْبِرَّ",
+   "page": 63
+  },
+  {
+   "n": 5,
+   "en": "Wal Mohsonat",
+   "ar": "وَٱلْمُحْصَنَاتُ",
+   "page": 83
+  },
+  {
+   "n": 6,
+   "en": "La Yuhibbullah",
+   "ar": "لَا يُحِبُّ ٱللهُ",
+   "page": 103
+  },
+  {
+   "n": 7,
+   "en": "Wa Iza Sami'u",
+   "ar": "وَإِذَا سَمِعُوا",
+   "page": 123
+  },
+  {
+   "n": 8,
+   "en": "Wa Lao Annana",
+   "ar": "وَلَوْ أَنَّنَا",
+   "page": 143
+  },
+  {
+   "n": 9,
+   "en": "Qaalal Malao",
+   "ar": "قَالَ ٱلْمَلَأُ",
+   "page": 163
+  },
+  {
+   "n": 10,
+   "en": "Wa'lamu annamaa",
+   "ar": "وَٱعْلَمُواْ",
+   "page": 183
+  },
+  {
+   "n": 11,
+   "en": "Ya'tazeroon",
+   "ar": "يَعْتَذِرُونَ",
+   "page": 203
+  },
+  {
+   "n": 12,
+   "en": "Wamaa min Daaabatin",
+   "ar": "وَمَا مِنْ دَآبَّةٍ",
+   "page": 223
+  },
+  {
+   "n": 13,
+   "en": "Wamaaa Ubarri`u",
+   "ar": "وَمَا أُبَرِّئُ",
+   "page": 243
+  },
+  {
+   "n": 14,
+   "en": "Rubamaa",
+   "ar": "رُبَمَا",
+   "page": 263
+  },
+  {
+   "n": 15,
+   "en": "Subhanallazii",
+   "ar": "سُبْحَانَ ٱلَّذِى",
+   "page": 283
+  },
+  {
+   "n": 16,
+   "en": "Qaala Alam",
+   "ar": "قَالَ أَلَمْ",
+   "page": 303
+  },
+  {
+   "n": 17,
+   "en": "Iqtaraba linnaas",
+   "ar": "ٱقْتَرَبَ لِلْنَّاسِ",
+   "page": 323
+  },
+  {
+   "n": 18,
+   "en": "Qadd Aflahal",
+   "ar": "قَدْ أَفْلَحَ",
+   "page": 343
+  },
+  {
+   "n": 19,
+   "en": "Waqaalallajiina",
+   "ar": "وَقَالَ ٱلَّذِينَ",
+   "page": 363
+  },
+  {
+   "n": 20,
+   "en": "Amman Khalaq",
+   "ar": "أَمَّنْ خَلَقَ",
+   "page": 383
+  },
+  {
+   "n": 21,
+   "en": "Utlu Maaa Ouhia",
+   "ar": "أُتْلُ مَاأُوْحِیَ",
+   "page": 403
+  },
+  {
+   "n": 22,
+   "en": "Wa Manyaqnut",
+   "ar": "وَمَنْ يَّقْنُتْ",
+   "page": 423
+  },
+  {
+   "n": 23,
+   "en": "Wamaa lia",
+   "ar": "وَمَآ لي",
+   "page": 443
+  },
+  {
+   "n": 24,
+   "en": "Faman Azlam",
+   "ar": "فَمَنْ أَظْلَمُ",
+   "page": 463
+  },
+  {
+   "n": 25,
+   "en": "Elaihi Yuroddo",
+   "ar": "إِلَيْهِ يُرَدُّ",
+   "page": 483
+  },
+  {
+   "n": 26,
+   "en": "Haa Meem",
+   "ar": "حم",
+   "page": 503
+  },
+  {
+   "n": 27,
+   "en": "Qala Fama",
+   "ar": "قَالَ فَمَا خَطْبُكُم",
+   "page": 523
+  },
+  {
+   "n": 28,
+   "en": "Qadd Sami'Allah",
+   "ar": "قَدْ سَمِعَ ٱللهُ",
+   "page": 543
+  },
+  {
+   "n": 29,
+   "en": "Tabaarokallazii",
+   "ar": "تَبَارَكَ ٱلَّذِى",
+   "page": 563
+  },
+  {
+   "n": 30,
+   "en": "A'mma Yatasaa aloon",
+   "ar": "عَمَّ",
+   "page": 587
+  }
+ ]
+}
