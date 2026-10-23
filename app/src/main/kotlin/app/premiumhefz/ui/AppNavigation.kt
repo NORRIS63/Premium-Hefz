@@ -63,10 +63,7 @@ private fun NavHostController.navigateToTab(target: String) {
 }
 
 @Composable
-fun AppNavigation(
-    showWelcome: Boolean = false,
-    onWelcomeStarted: () -> Unit = {}
-) {
+fun AppNavigation(showWelcome: Boolean = false) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
@@ -115,8 +112,7 @@ fun AppNavigation(
                     onOpenBrowse = { nav.navigate(Routes.browse(it)) },
                     onOpenBookmarks = { nav.navigateToTab(Routes.BOOKMARKS) },
                     onImportPages = { nav.navigate(Routes.SETUP) },
-                    showWelcome = showWelcome,
-                    onWelcomeStarted = onWelcomeStarted
+                    showWelcome = showWelcome
                 )
             }
             composable(

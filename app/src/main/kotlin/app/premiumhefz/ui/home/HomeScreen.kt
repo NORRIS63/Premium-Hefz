@@ -131,8 +131,7 @@ fun HomeScreen(
     onOpenBrowse: (Int) -> Unit,
     onOpenBookmarks: () -> Unit,
     onImportPages: () -> Unit,
-    showWelcome: Boolean = false,
-    onWelcomeStarted: () -> Unit = {}
+    showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
     val vm: HomeViewModel = appViewModel { HomeViewModel(it.repository, it.pagePack) }
@@ -176,7 +175,11 @@ fun HomeScreen(
         }
     }
     if (showWelcome) {
-        LaunchedEffect(Unit) { onWelcomeStarted() }
+        // Plays once per Home composition (like Tapless, which plays it each
+        // time its Home shows) and removes itself when the 7 s are over.
+        // It must NOT report back to a "played" flag here: an earlier version
+        // did, and the flag switched showWelcome off in the ribbon's first
+        // frames, so it never became visible.
         WelcomeRibbon(Modifier.fillMaxSize())
     }
     }
