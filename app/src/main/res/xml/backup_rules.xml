@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Progress and settings are backed up. The 43 MB page folder is not: it can be re-imported and is
-     larger than the cloud backup quota. -->
+<!-- Progress and settings are backed up. App files are not included at all, so the 43 MB page
+     folder (files/pages) is never backed up either: it re-extracts from the bundled asset and
+     would exceed the cloud backup quota anyway. (Lint FullBackupContent: an <exclude> for a
+     domain that is never included is a fatal error in release builds, so there is none here.) -->
 <full-backup-content>
     <include domain="database" path="." />
     <include domain="sharedpref" path="." />
-    <exclude domain="file" path="pages" />
 </full-backup-content>
