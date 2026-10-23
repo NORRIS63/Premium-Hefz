@@ -11,7 +11,11 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -35,6 +39,7 @@ import app.premiumhefz.ui.theme.Gold500
 import app.premiumhefz.ui.theme.Ivory50
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -343,24 +348,32 @@ private fun ResumeButton(text: String, onClick: () -> Unit) {
 private fun ButtonNoiseGradient(modifier: Modifier = Modifier) {
     val noise = remember { createNoiseBitmap() }
     val transition = rememberInfiniteTransition(label = "resumeButton")
-    val driftA by transition.animateFloat(
+    val driftAState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(5_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftA"
     )
-    val driftB by transition.animateFloat(
+    val driftBState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(7_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftB"
     )
-    val grainShift by transition.animateFloat(
+    val grainState = transition.animateFloat(
         initialValue = -10f,
         targetValue = 10f,
         animationSpec = infiniteRepeatable(tween(6_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnGrainShift"
     )
+    // Hold still while the startup animation plays, then advance in fine
+    // steps — an ambient glow does not need 60 canvas redraws a second, and
+    // the constant redraws were making the app feel laggy.
+    var started by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(1500); started = true }
+    val driftA by remember { derivedStateOf { if (started) (driftAState.value * 60f).roundToInt() / 60f else 0.30f } }
+    val driftB by remember { derivedStateOf { if (started) (driftBState.value * 60f).roundToInt() / 60f else 0.55f } }
+    val grainShift by remember { derivedStateOf { if (started) (grainState.value * 2f).roundToInt() / 2f else 0f } }
     Canvas(modifier) {
         drawRect(color = Emerald800)
         val centerA = Offset(
@@ -426,24 +439,31 @@ private fun ButtonNoiseGradient(modifier: Modifier = Modifier) {
 private fun NoiseGradientBackground(modifier: Modifier = Modifier) {
     val noise = remember { createNoiseBitmap() }
     val transition = rememberInfiniteTransition(label = "resumeCard")
-    val driftA by transition.animateFloat(
+    val driftAState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(16_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "driftA"
     )
-    val driftB by transition.animateFloat(
+    val driftBState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(tween(21_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "driftB"
     )
-    val grainShift by transition.animateFloat(
+    val grainState = transition.animateFloat(
         initialValue = -14f,
         targetValue = 14f,
         animationSpec = infiniteRepeatable(tween(12_000, easing = LinearEasing), RepeatMode.Reverse),
         label = "grainShift"
     )
+    // Same treatment as the button: still during the startup animation,
+    // then coarse steps (a redraw every few hundred ms, not every frame).
+    var started by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(1500); started = true }
+    val driftA by remember { derivedStateOf { if (started) (driftAState.value * 36f).roundToInt() / 36f else 0.30f } }
+    val driftB by remember { derivedStateOf { if (started) (driftBState.value * 36f).roundToInt() / 36f else 0.55f } }
+    val grainShift by remember { derivedStateOf { if (started) (grainState.value * 2f).roundToInt() / 2f else 0f } }
     Canvas(modifier) {
         drawRect(
             brush = Brush.linearGradient(

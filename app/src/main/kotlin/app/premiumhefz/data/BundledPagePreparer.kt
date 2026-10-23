@@ -38,8 +38,14 @@ class BundledPagePreparer(private val appContext: Context, private val pack: Pag
     fun prepareIfNeeded() {
         if (requested) return
         requested = true
-        if (!available || pack.status.value.complete) return
-        scope.launch { prepare() }
+        // Every check runs on the IO scope: merely touching the pack builds it
+        // (manifest parse + scanning the pages directory), and that must never
+        // happen on the main thread during Application.onCreate — it delays
+        // the first frame and makes the app feel laggy while opening.
+        scope.launch {
+            if (!available || pack.status.value.complete) return@launch
+            prepare()
+        }
     }
 
     private suspend fun prepare() {
