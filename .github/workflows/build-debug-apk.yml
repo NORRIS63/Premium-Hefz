@@ -18,16 +18,16 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-      - name: Unit tests and debug APK
-        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug
+      - name: Unit tests and release APK
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleRelease
       - uses: actions/upload-artifact@v4
         with:
-          name: premium-hefz-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: premium-hefz-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
       - name: Publish APK to Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.0-build.${{ github.run_number }}
-          name: Premium Hefz debug build ${{ github.run_number }}
+          name: Premium Hefz release build ${{ github.run_number }}
           prerelease: true
-          files: app/build/outputs/apk/debug/app-debug.apk
+          files: app/build/outputs/apk/release/app-release.apk

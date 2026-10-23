@@ -19,8 +19,14 @@ android {
 
     buildTypes {
         release {
-            // Left off until a release build has been tested end to end.
-            isMinifyEnabled = false
+            // Optimized build for real use: R8 minification and optimization on.
+            // Resource shrinking stays OFF on purpose — the Quran page pack is a
+            // bundled asset and must never be a shrinking candidate.
+            // Signed with the debug key so it installs (and updates in place)
+            // exactly like the debug builds, until the project gets a dedicated
+            // release keystore.
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
