@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -73,6 +74,26 @@ class SetupViewModel(private val appContext: Context, private val pack: PagePack
     private var job: Job? = null
 
     val originalInstalled: Boolean get() = installedOriginalApk() != null
+
+    /** The verified page pack bundled in the app's assets, if present. */
+    val bundledAvailable: Boolean by lazy {
+        try {
+            appContext.assets.open(BUNDLED_PACK).use { true }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private var autoImportStarted = false
+
+    /** First-run path: extract the bundled pack automatically, with no file picking. Runs at most once. */
+    fun autoImportIfNeeded(packComplete: Boolean) {
+        if (autoImportStarted || packComplete || !bundledAvailable) return
+        autoImportStarted = true
+        importFromBundled()
+    }
+
+    fun importFromBundled() = startImport { appContext.assets.open(BUNDLED_PACK) }
 
     fun importFromUri(uri: Uri) = startImport { appContext.contentResolver.openInputStream(uri) }
 
@@ -134,6 +155,7 @@ class SetupViewModel(private val appContext: Context, private val pack: PagePack
 
     private companion object {
         const val ORIGINAL_PACKAGE = "com.golap.hefzquran"
+        const val BUNDLED_PACK = "quran_pages.zip"
         const val SAFETY_BYTES = 8L * 1024 * 1024
     }
 }
@@ -145,6 +167,8 @@ fun SetupScreen(onBack: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val pack by container.pagePack.status.collectAsStateWithLifecycle()
     val originalInstalled = remember { vm.originalInstalled }
+    // Bundled pages prepare themselves on first run; no file picking, no other app needed.
+    LaunchedEffect(pack.complete) { vm.autoImportIfNeeded(pack.complete) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) vm.importFromUri(uri)
     }
@@ -167,6 +191,11 @@ fun SetupScreen(onBack: () -> Unit) {
             PackSummary(pack)
 
             val busy = state is SetupViewModel.UiState.Working
+            if (vm.bundledAvailable && !pack.complete) {
+                Button(onClick = vm::importFromBundled, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.setup_bundled))
+                }
+            }
             if (originalInstalled) {
                 Button(onClick = vm::importFromInstalledOriginal, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.setup_installed))
