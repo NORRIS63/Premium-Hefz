@@ -1,5 +1,35 @@
 package app.premiumhefz.ui.home
 
+import android.graphics.Bitmap
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import app.premiumhefz.ui.theme.Emerald100
+import app.premiumhefz.ui.theme.Emerald500
+import app.premiumhefz.ui.theme.Emerald600
+import app.premiumhefz.ui.theme.Emerald850
+import app.premiumhefz.ui.theme.Emerald950
+import app.premiumhefz.ui.theme.Gold400
+import app.premiumhefz.ui.theme.Gold500
+import app.premiumhefz.ui.theme.Ivory50
+import kotlin.math.roundToInt
+import kotlin.random.Random
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -196,43 +226,175 @@ private fun ContinueCard(lastPage: Int?, index: QuranIndex, onContinue: (Int) ->
     val page = lastPage ?: PageCoordinates.FIRST_PAGE
     val juz = index.juzForPage(page)
     val pageInJuz = index.pageInJuz(page)
-    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-        Box(Modifier.fillMaxWidth()) {
-            StarWatermark(
-                modifier = Modifier
-                    .size(190.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 54.dp, y = (-46).dp)
+    val shape = RoundedCornerShape(28.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 16.dp,
+                shape = shape,
+                ambientColor = Gold500.copy(alpha = 0.5f),
+                spotColor = Gold500.copy(alpha = 0.5f)
             )
-            Column(Modifier.padding(22.dp)) {
-                Text(
-                    text = stringResource(if (lastPage == null) R.string.home_start else R.string.home_continue),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.brand.gold
+            .clip(shape)
+            .background(Emerald950)
+    ) {
+        NoiseGradientBackground(Modifier.matchParentSize())
+        StarWatermark(
+            modifier = Modifier
+                .size(190.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 54.dp, y = (-46).dp)
+        )
+        Column(Modifier.padding(22.dp)) {
+            Text(
+                text = stringResource(if (lastPage == null) R.string.home_start else R.string.home_continue),
+                style = MaterialTheme.typography.labelLarge,
+                color = Gold400
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = index.surahLabel(page),
+                style = MaterialTheme.typography.headlineMedium,
+                color = Ivory50
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = if (juz != null && pageInJuz != null) {
+                    stringResource(R.string.home_page_juz_fmt, page, juz.number, pageInJuz)
+                } else {
+                    stringResource(R.string.home_page_only_fmt, page)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = Emerald100.copy(alpha = 0.8f)
+            )
+            Spacer(Modifier.height(18.dp))
+            Button(
+                onClick = { onContinue(page) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gold500,
+                    contentColor = Emerald950
+                ),
+                shape = RoundedCornerShape(50)
+            ) {
+                Text(stringResource(if (lastPage == null) R.string.home_start_button else R.string.home_resume))
+                Spacer(Modifier.width(6.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = index.surahLabel(page),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = if (juz != null && pageInJuz != null) {
-                        stringResource(R.string.home_page_juz_fmt, page, juz.number, pageInJuz)
-                    } else {
-                        stringResource(R.string.home_page_only_fmt, page)
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.height(18.dp))
-                Button(onClick = { onContinue(page) }) {
-                    Text(stringResource(if (lastPage == null) R.string.home_start_button else R.string.home_resume))
-                }
             }
         }
     }
+}
+
+/**
+ * The premium card backdrop: a deep emerald gradient with three large, very
+ * slow drifting colour fields (emerald, teal, a whisper of gold) and a fine
+ * film-grain noise layer on top — the NoiseBackground idea, drawn natively
+ * on a Canvas. Cycles run 12–21 s so the motion stays restrained, and the
+ * grain is a single tiny bitmap generated once, so the cost is negligible.
+ */
+@Composable
+private fun NoiseGradientBackground(modifier: Modifier = Modifier) {
+    val noise = remember { createNoiseBitmap() }
+    val transition = rememberInfiniteTransition(label = "resumeCard")
+    val driftA by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(16_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "driftA"
+    )
+    val driftB by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(21_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "driftB"
+    )
+    val grainShift by transition.animateFloat(
+        initialValue = -14f,
+        targetValue = 14f,
+        animationSpec = infiniteRepeatable(tween(12_000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "grainShift"
+    )
+    Canvas(modifier) {
+        drawRect(
+            brush = Brush.linearGradient(
+                colors = listOf(Emerald850, Emerald950),
+                start = Offset.Zero,
+                end = Offset(size.width, size.height)
+            )
+        )
+        val centerA = Offset(
+            size.width * (0.12f + 0.30f * driftA),
+            size.height * (0.05f + 0.45f * driftB)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Emerald600.copy(alpha = 0.38f), Color.Transparent),
+                center = centerA,
+                radius = size.maxDimension * 0.85f
+            ),
+            radius = size.maxDimension * 0.85f,
+            center = centerA
+        )
+        val centerB = Offset(
+            size.width * (0.88f - 0.30f * driftB),
+            size.height * (0.95f - 0.40f * driftA)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Emerald500.copy(alpha = 0.18f), Color.Transparent),
+                center = centerB,
+                radius = size.maxDimension * 0.8f
+            ),
+            radius = size.maxDimension * 0.8f,
+            center = centerB
+        )
+        val centerC = Offset(
+            size.width * (0.75f - 0.15f * driftA),
+            size.height * (0.10f + 0.20f * driftB)
+        )
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(Gold500.copy(alpha = 0.10f), Color.Transparent),
+                center = centerC,
+                radius = size.maxDimension * 0.55f
+            ),
+            radius = size.maxDimension * 0.55f,
+            center = centerC
+        )
+        drawRect(
+            brush = Brush.verticalGradient(
+                colors = listOf(Color.White.copy(alpha = 0.05f), Color.Transparent),
+                startY = 0f,
+                endY = size.height * 0.55f
+            )
+        )
+        val slack = 56
+        drawImage(
+            image = noise,
+            dstOffset = IntOffset(
+                -slack / 2 + grainShift.roundToInt(),
+                -slack / 2 + (driftB * 10f).roundToInt()
+            ),
+            dstSize = IntSize(size.width.toInt() + slack, size.height.toInt() + slack),
+            alpha = 0.05f
+        )
+    }
+}
+
+private fun createNoiseBitmap(sizePx: Int = 192): ImageBitmap {
+    val random = Random(20261023)
+    val pixels = IntArray(sizePx * sizePx)
+    for (i in pixels.indices) {
+        val g = random.nextInt(256)
+        pixels[i] = android.graphics.Color.rgb(g, g, g)
+    }
+    val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+    bitmap.setPixels(pixels, 0, sizePx, 0, 0, sizePx, sizePx)
+    return bitmap.asImageBitmap()
 }
 
 @Composable
