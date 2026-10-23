@@ -45,6 +45,21 @@ class PagePack(context: Context, val manifest: Map<Int, PageRecord>) {
         refresh()
     }
 
+    // Only one import/extraction may write pages at a time: the automatic first-run
+    // preparer and a manual import from Setup must never run concurrently.
+    private val importGate = Any()
+    @Volatile private var importActive = false
+
+    /** Returns true (and claims the gate) if no import is currently running. */
+    fun tryBeginImport(): Boolean = synchronized(importGate) {
+        if (importActive) false else {
+            importActive = true
+            true
+        }
+    }
+
+    fun endImport() = synchronized(importGate) { importActive = false }
+
     private fun readStatus(): PackStatus {
         val installed = manifest.keys.count { sink.target(it).isFile }
         val verified = prefs.getLong(KEY_VERIFIED_AT, 0L).takeIf { it > 0L }

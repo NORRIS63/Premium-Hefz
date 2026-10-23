@@ -118,38 +118,49 @@ class SetupViewModel(private val appContext: Context, private val pack: PagePack
     private fun startImport(open: () -> InputStream?) {
         if (job?.isActive == true) return
         job = viewModelScope.launch {
-            uiState.value = UiState.Working(0, 0, 0)
-            val outcome: UiState = withContext(Dispatchers.IO) {
-                try {
-                    val needed = pack.manifest.values.filter { !pack.sink.isInstalled(it.page) }.sumOf { it.bytes }
-                    val free = StatFs(pack.directory.path).availableBytes
-                    if (free < needed + SAFETY_BYTES) {
-                        return@withContext UiState.Failed(Reason.NO_SPACE, ((needed + SAFETY_BYTES) / 1_048_576L).toInt())
-                    }
-                    val stream = open() ?: return@withContext UiState.Failed(Reason.UNREADABLE)
-                    val result = stream.use {
-                        PagePackExtractor.extract(
-                            input = it,
-                            manifest = pack.manifest,
-                            sink = pack.sink,
-                            onProgress = { p -> uiState.value = UiState.Working(p.verified, p.failed, p.skipped) },
-                            isCancelled = { !isActive }
-                        )
-                    }
-                    PageBitmaps.clear()
-                    pack.refresh()
-                    // Pages skipped as "already installed" were only size-checked, so claim verification
-                    // only when this run hashed every page.
-                    pack.markVerified(if (result.verified.size == pack.manifest.size) System.currentTimeMillis() else null)
-                    val installed = pack.manifest.keys.count { pack.sink.isInstalled(it) }
-                    UiState.Finished(result.verified.size, result.failed.size, pack.manifest.size - installed)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    UiState.Failed(Reason.UNREADABLE)
-                }
+            // The automatic first-run preparer may already be writing pages;
+            // never run two extractions at once. Pack status above keeps
+            // showing live progress in that case.
+            if (!pack.tryBeginImport()) {
+                uiState.value = UiState.Idle
+                return@launch
             }
-            uiState.value = outcome
+            try {
+                uiState.value = UiState.Working(0, 0, 0)
+                val outcome: UiState = withContext(Dispatchers.IO) {
+                    try {
+                        val needed = pack.manifest.values.filter { !pack.sink.isInstalled(it.page) }.sumOf { it.bytes }
+                        val free = StatFs(pack.directory.path).availableBytes
+                        if (free < needed + SAFETY_BYTES) {
+                            return@withContext UiState.Failed(Reason.NO_SPACE, ((needed + SAFETY_BYTES) / 1_048_576L).toInt())
+                        }
+                        val stream = open() ?: return@withContext UiState.Failed(Reason.UNREADABLE)
+                        val result = stream.use {
+                            PagePackExtractor.extract(
+                                input = it,
+                                manifest = pack.manifest,
+                                sink = pack.sink,
+                                onProgress = { p -> uiState.value = UiState.Working(p.verified, p.failed, p.skipped) },
+                                isCancelled = { !isActive }
+                            )
+                        }
+                        PageBitmaps.clear()
+                        pack.refresh()
+                        // Pages skipped as "already installed" were only size-checked, so claim verification
+                        // only when this run hashed every page.
+                        pack.markVerified(if (result.verified.size == pack.manifest.size) System.currentTimeMillis() else null)
+                        val installed = pack.manifest.keys.count { pack.sink.isInstalled(it) }
+                        UiState.Finished(result.verified.size, result.failed.size, pack.manifest.size - installed)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        UiState.Failed(Reason.UNREADABLE)
+                    }
+                }
+                uiState.value = outcome
+            } finally {
+                pack.endImport()
+            }
         }
     }
 

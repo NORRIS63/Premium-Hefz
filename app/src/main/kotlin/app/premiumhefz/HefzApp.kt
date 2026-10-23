@@ -10,5 +10,8 @@ class HefzApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        // Fresh installs prepare the bundled Quran pages in the background right
+        // from this first launch — no import step for the user.
+        container.bundledPreparer.prepareIfNeeded()
     }
 }
