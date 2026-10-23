@@ -16,5 +16,5 @@ class AppContainer(context: Context) {
         PagePack(appContext, PageManifest.parse(csv))
     }
     val repository: HefzRepository by lazy { HefzRepository(database, settings) }
-    val bundledPreparer: BundledPagePreparer by lazy { BundledPagePreparer(appContext, pagePack) }
+    val bundledPreparer: BundledPagePreparer by lazy { BundledPagePreparer(appContext) { pagePack } }
 }

@@ -18,7 +18,10 @@ import kotlinx.coroutines.launch
  * If anything fails, the pack simply stays incomplete and the manual paths
  * in Setup remain available as a fallback.
  */
-class BundledPagePreparer(private val appContext: Context, private val pack: PagePack) {
+class BundledPagePreparer(
+    private val appContext: Context,
+    private val packProvider: () -> PagePack
+) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -38,17 +41,20 @@ class BundledPagePreparer(private val appContext: Context, private val pack: Pag
     fun prepareIfNeeded() {
         if (requested) return
         requested = true
-        // Every check runs on the IO scope: merely touching the pack builds it
-        // (manifest parse + scanning the pages directory), and that must never
-        // happen on the main thread during Application.onCreate — it delays
-        // the first frame and makes the app feel laggy while opening.
+        // Everything happens on the IO scope — including resolving the pack.
+        // Building the pack parses the 610-row manifest and scans the pages
+        // directory; when that ran inside Application.onCreate (as a
+        // constructor argument) it blocked the main thread before the first
+        // frame and made opening the app feel laggy.
         scope.launch {
-            if (!available || pack.status.value.complete) return@launch
-            prepare()
+            if (!available) return@launch
+            val pack = packProvider()
+            if (pack.status.value.complete) return@launch
+            prepare(pack)
         }
     }
 
-    private suspend fun prepare() {
+    private suspend fun prepare(pack: PagePack) {
         if (!pack.tryBeginImport()) return
         try {
             if (pack.status.value.complete) return
