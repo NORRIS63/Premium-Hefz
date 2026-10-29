@@ -6,6 +6,12 @@
          the last loaded content offline. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- POST_NOTIFICATIONS for the opt-in daily reminder (requested only
+         when the toggle is turned on); RECEIVE_BOOT_COMPLETED so the
+         reminder can be rescheduled after a reboot. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <queries>
         <!-- Lets the page import offer "use the installed Hefz Quran app" when it is present. -->
         <package android:name="com.golap.hefzquran" />
@@ -32,5 +38,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".reminder.ReminderReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".reminder.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

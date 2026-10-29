@@ -1,5 +1,7 @@
 package app.premiumhefz.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,13 +28,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.Manifest
+import android.app.TimePickerDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import app.premiumhefz.R
 import app.premiumhefz.data.AppSettings
 import app.premiumhefz.data.HefzRepository
 import app.premiumhefz.data.PageTone
 import app.premiumhefz.data.ThemeMode
+import app.premiumhefz.reminder.ReminderScheduler
 import app.premiumhefz.ui.appViewModel
 import app.premiumhefz.ui.components.ScreenTitle
 import app.premiumhefz.ui.components.SectionLabel
@@ -51,6 +59,27 @@ fun SettingsScreen() {
     val context = LocalContext.current
     val versionName = remember {
         runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: ""
+    }
+    // Notification permission is only requested when the reminder is
+    // turned on. If it is denied, the toggle honestly stays off.
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            vm.update { it.copy(reminderEnabled = true) }
+            ReminderScheduler.schedule(context, settings.reminderHour, settings.reminderMinute)
+        }
+    }
+    fun enableReminder() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+        ) {
+            vm.update { it.copy(reminderEnabled = true) }
+            ReminderScheduler.schedule(context, settings.reminderHour, settings.reminderMinute)
+        } else {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState())) {
@@ -134,6 +163,51 @@ fun SettingsScreen() {
                 checked = settings.reduceMotion,
                 onCheckedChange = { checked -> vm.update { it.copy(reduceMotion = checked) } }
             )
+
+            Spacer(Modifier.height(6.dp))
+            SectionLabel(stringResource(R.string.settings_reminders))
+            SwitchRow(
+                title = stringResource(R.string.reminder_title),
+                subtitle = stringResource(R.string.reminder_sub),
+                checked = settings.reminderEnabled,
+                onCheckedChange = { checked ->
+                    if (checked) {
+                        enableReminder()
+                    } else {
+                        vm.update { it.copy(reminderEnabled = false) }
+                        ReminderScheduler.cancel(context)
+                    }
+                }
+            )
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.reminder_time), style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = stringResource(
+                            R.string.reminder_time_fmt,
+                            settings.reminderHour,
+                            settings.reminderMinute
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                TextButton(
+                    enabled = settings.reminderEnabled,
+                    onClick = {
+                        TimePickerDialog(
+                            context,
+                            { _, hour, minute ->
+                                vm.update { it.copy(reminderHour = hour, reminderMinute = minute) }
+                                ReminderScheduler.schedule(context, hour, minute)
+                            },
+                            settings.reminderHour,
+                            settings.reminderMinute,
+                            true
+                        ).show()
+                    }
+                ) { Text(stringResource(R.string.reminder_change)) }
+            }
 
             Spacer(Modifier.height(6.dp))
             SectionLabel(stringResource(R.string.settings_about))

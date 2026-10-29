@@ -235,6 +235,16 @@
     <string name="revision_empty">Nothing due for revision. Add a page number above to start.</string>
     <string name="revision_invalid">Enter a page from 2 to 611</string>
     <string name="revision_page_fmt">Page %d</string>
+
+    <!-- Daily reminder -->
+    <string name="settings_reminders">Reminders</string>
+    <string name="reminder_title">Daily reminder</string>
+    <string name="reminder_sub">A daily nudge to keep your reading habit going</string>
+    <string name="reminder_time">Reminder time</string>
+    <string name="reminder_time_fmt">%1$02d:%2$02d</string>
+    <string name="reminder_change">Change</string>
+    <string name="reminder_text">Time for your daily reading.</string>
+    <string name="reminder_channel">Reminders</string>
     <string name="home_progress_title">Progress</string>
     <string name="home_khatmah_fmt">%1$d of 610 pages · %2$d%%</string>
     <string name="home_week_caption">Last 7 days</string>
