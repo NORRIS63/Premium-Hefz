@@ -81,6 +81,7 @@ import app.premiumhefz.data.HefzRepository
 import app.premiumhefz.data.PagePack
 import app.premiumhefz.data.PackStatus
 import app.premiumhefz.domain.Dates
+import app.premiumhefz.domain.HijriDate
 import app.premiumhefz.domain.PageCoordinates
 import app.premiumhefz.domain.QuranIndex
 import app.premiumhefz.domain.Streaks
@@ -187,6 +188,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeHeader(pack: PackStatus) {
+    Column {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -215,6 +217,15 @@ private fun HomeHeader(pack: PackStatus) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
+        }
+    }
+        HijriDate.today()?.let { hijri ->
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = hijri,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.brand.goldSoft
+            )
         }
     }
 }
