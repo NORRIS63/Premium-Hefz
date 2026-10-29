@@ -166,6 +166,16 @@
     <string name="hadith_count_fmt">%1$d hadith</string>
     <string name="hadith_list_number_fmt">Hadith %1$s</string>
     <string name="hadith_all_hadith">All hadith</string>
+
+    <!-- Ruqyah -->
+    <string name="ruqyah_title">Ruqyah</string>
+    <string name="ruqyah_sub">Quranic verses · Arabic</string>
+    <string name="ruqyah_loading">Loading verses…</string>
+    <string name="ruqyah_failed">Couldn’t load the verses. Please try again.</string>
+    <string name="ruqyah_retry">Retry</string>
+    <string name="ruqyah_passage_fmt">%1$s · %2$s</string>
+    <string name="ruqyah_disclaimer">Ruqyah is a spiritual practice. It does not replace medical treatment — if you are unwell, see a doctor.</string>
+    <string name="ruqyah_credit">Quran text: Uthmani script (Tanzil, CC BY 3.0 — tanzil.net). The passages are shown exactly as the edition prints them.</string>
     <string name="home_progress_title">Progress</string>
     <string name="home_khatmah_fmt">%1$d of 610 pages · %2$d%%</string>
     <string name="home_week_caption">Last 7 days</string>

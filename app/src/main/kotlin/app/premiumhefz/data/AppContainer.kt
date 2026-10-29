@@ -17,5 +17,6 @@ class AppContainer(context: Context) {
     }
     val repository: HefzRepository by lazy { HefzRepository(database, settings) }
     val hadithRepository: HadithRepository by lazy { HadithRepository(appContext) }
+    val ruqyahRepository: RuqyahRepository by lazy { RuqyahRepository(appContext) }
     val bundledPreparer: BundledPagePreparer by lazy { BundledPagePreparer(appContext) { pagePack } }
 }

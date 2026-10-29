@@ -32,6 +32,7 @@ import app.premiumhefz.ui.browse.BrowseScreen
 import app.premiumhefz.ui.hadith.HadithDetailScreen
 import app.premiumhefz.ui.hadith.HadithLibraryScreen
 import app.premiumhefz.ui.home.HomeScreen
+import app.premiumhefz.ui.ruqyah.RuqyahScreen
 import app.premiumhefz.ui.reader.ReaderScreen
 import app.premiumhefz.ui.sajdah.SajdahScreen
 import app.premiumhefz.ui.settings.SettingsScreen
@@ -48,6 +49,7 @@ object Routes {
     const val SAJDAH = "sajdah"
     const val HADITH_LIBRARY = "hadith_library"
     const val HADITH_DETAIL = "hadith/{book}/{number}"
+    const val RUQYAH = "ruqyah"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
@@ -122,6 +124,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenSajdah = { nav.navigate(Routes.SAJDAH) },
                     onOpenHadithDetail = { book, number -> nav.navigate(Routes.hadithDetail(book, number)) },
                     onOpenHadithLibrary = { nav.navigate(Routes.HADITH_LIBRARY) },
+                    onOpenRuqyah = { nav.navigate(Routes.RUQYAH) },
                     showWelcome = showWelcome
                 )
             }
@@ -146,6 +149,9 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenDetail = { book, number -> nav.navigate(Routes.hadithDetail(book, number)) },
                     onBack = { nav.popBackStack() }
                 )
+            }
+            composable(Routes.RUQYAH) {
+                RuqyahScreen(onBack = { nav.popBackStack() })
             }
             composable(
                 route = Routes.HADITH_DETAIL,

@@ -192,6 +192,7 @@ fun HomeScreen(
     onOpenSajdah: () -> Unit,
     onOpenHadithDetail: (String, String) -> Unit,
     onOpenHadithLibrary: () -> Unit,
+    onOpenRuqyah: () -> Unit,
     showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
@@ -301,6 +302,31 @@ fun HomeScreen(
                     )
                     Text(
                         text = stringResource(R.string.hadith_library_sub),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+        }
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            onClick = onOpenRuqyah,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.ruqyah_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.ruqyah_sub),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
