@@ -139,4 +139,18 @@
     <string name="setup_error">Couldn’t read that file.</string>
     <string name="setup_not_installed">The original app isn’t installed on this device.</string>
     <string name="setup_start_reading">Start reading</string>
+    <string name="sajdah_title">Sajdah verses</string>
+    <string name="sajdah_header">15 verses carry a prostration marker. The Hanafi set of 14 is shown first; verses that differ by school carry a note.</string>
+    <string name="sajdah_section_hanafi">Hanafi set · 14 verses</string>
+    <string name="sajdah_section_other">Also marked in other schools</string>
+    <string name="sajdah_note_hajj">Counted by Shafi\'i and Hanbali; not counted by Hanafis.</string>
+    <string name="sajdah_note_sad">Counted by Hanafis; Shafi\'i and Hanbali treat it as a prostration of gratitude, not a recitation sajdah.</string>
+    <string name="sajdah_open_hint">Tapping a verse opens its surah\'s first page — swipe forward to reach the verse. Exact verse pages are not shown for this mushaf.</string>
+    <string name="sajdah_footer_schools">Maliki and Hanbali details vary between sources and are not listed here.</string>
+    <string name="sajdah_row_title">Surah %1$d · %2$s</string>
+    <string name="sajdah_row_title_unknown">Surah %1$d</string>
+    <string name="sajdah_row_ayah">Ayah %1$s</string>
+    <string name="home_companion_title">Islamic companion</string>
+    <string name="home_companion_sajdah">Sajdah verses</string>
+    <string name="home_companion_sajdah_sub">15 marked verses</string>
 </resources>

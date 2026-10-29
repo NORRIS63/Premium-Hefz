@@ -132,6 +132,7 @@ fun HomeScreen(
     onOpenBrowse: (Int) -> Unit,
     onOpenBookmarks: () -> Unit,
     onImportPages: () -> Unit,
+    onOpenSajdah: () -> Unit,
     showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
@@ -171,6 +172,42 @@ fun HomeScreen(
                 onClick = { onOpenBrowse(2) },
                 modifier = Modifier.weight(1f)
             ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+        }
+        Text(
+            text = stringResource(R.string.home_companion_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            onClick = onOpenSajdah,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "۩",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.brand.gold
+                )
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.home_companion_sajdah),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.home_companion_sajdah_sub),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }

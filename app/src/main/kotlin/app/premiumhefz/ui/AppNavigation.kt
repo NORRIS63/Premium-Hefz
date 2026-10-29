@@ -31,6 +31,7 @@ import app.premiumhefz.ui.bookmarks.BookmarksScreen
 import app.premiumhefz.ui.browse.BrowseScreen
 import app.premiumhefz.ui.home.HomeScreen
 import app.premiumhefz.ui.reader.ReaderScreen
+import app.premiumhefz.ui.sajdah.SajdahScreen
 import app.premiumhefz.ui.settings.SettingsScreen
 import app.premiumhefz.ui.setup.SetupScreen
 import app.premiumhefz.ui.theme.brand
@@ -42,6 +43,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val SETUP = "setup"
     const val READER = "reader/{page}"
+    const val SAJDAH = "sajdah"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
@@ -112,6 +114,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenBrowse = { nav.navigate(Routes.browse(it)) },
                     onOpenBookmarks = { nav.navigateToTab(Routes.BOOKMARKS) },
                     onImportPages = { nav.navigate(Routes.SETUP) },
+                    onOpenSajdah = { nav.navigate(Routes.SAJDAH) },
                     showWelcome = showWelcome
                 )
             }
@@ -125,6 +128,12 @@ fun AppNavigation(showWelcome: Boolean = false) {
                 )
             }
             composable(Routes.BOOKMARKS) { BookmarksScreen(onOpenPage = { nav.navigate(Routes.reader(it)) }) }
+            composable(Routes.SAJDAH) {
+                SajdahScreen(
+                    onOpenPage = { nav.navigate(Routes.reader(it)) },
+                    onBack = { nav.popBackStack() }
+                )
+            }
             composable(Routes.SETTINGS) { SettingsScreen(onOpenSetup = { nav.navigate(Routes.SETUP) }) }
             composable(Routes.SETUP) { SetupScreen(onBack = { nav.popBackStack() }) }
             composable(
