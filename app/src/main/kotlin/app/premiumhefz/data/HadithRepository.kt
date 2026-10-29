@@ -53,6 +53,13 @@ class HadithRepository(context: Context) {
     }
 
     suspend fun dayHadith(epochDay: Long): DayState = withContext(Dispatchers.IO) {
+        // Once a day: if today's hadith was already picked and saved, reuse
+        // it without re-reading and re-parsing the whole book. The saved
+        // pick is only ever written by a fresh pick, so a same-day saved
+        // pick IS today's hadith — not a stale fallback.
+        lastShown()?.takeIf { it.day == epochDay }?.let {
+            return@withContext DayState.Ready(it, offline = false)
+        }
         val books = HADITH_BOOKS
         val book = books[Math.floorMod(epochDay, books.size.toLong()).toInt()]
         val data = bookData(book.id)
@@ -73,6 +80,12 @@ class HadithRepository(context: Context) {
         val book = HADITH_BOOKS.firstOrNull { it.id == bookId } ?: return null
         val arabic = prefs.getString("arabic", null) ?: return null
         val bengali = prefs.getString("bengali", null) ?: return null
+        val grades = prefs.getString("grades", null)
+            ?.split("\n")
+            ?.mapNotNull { part ->
+                val pair = part.split("")
+                if (pair.size >= 2) pair[0] to pair[1] else null
+            } ?: emptyList()
         return DayHadith(
             book = book,
             day = prefs.getLong("day", 0L),
@@ -81,7 +94,7 @@ class HadithRepository(context: Context) {
             bengali = bengali,
             sectionTitle = prefs.getString("section", null),
             inBookRef = prefs.getString("ref", null),
-            grades = emptyList()
+            grades = grades
         )
     }
 
@@ -93,6 +106,7 @@ class HadithRepository(context: Context) {
             .putString("bengali", pick.bengali)
             .putString("section", pick.sectionTitle)
             .putString("ref", pick.inBookRef)
+            .putString("grades", pick.grades.joinToString("\n") { "${it.first}${it.second}" })
             .putLong("day", pick.day)
             .apply()
     }
