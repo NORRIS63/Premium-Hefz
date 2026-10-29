@@ -8,11 +8,17 @@ import androidx.room.RoomDatabase
 /**
  * Schema version 1. Later versions must add explicit Migrations; destructive fallbacks are
  * deliberately not used so a user's progress is never wiped by an update.
+ *
+ * Schema export is OFF on purpose: the project uses no auto-migrations and commits no
+ * schema JSONs, so the exported files served no purpose — but on CI the export step
+ * intermittently failed the build with Room's "Empty schema file" error (it struck
+ * both the debug and the release KSP tasks on different runs). Disabling it removes
+ * that failure mode entirely. Do not re-enable it without committing schema JSONs.
  */
 @Database(
     entities = [BookmarkEntity::class, ReadingPositionEntity::class, ReadEventEntity::class],
     version = 1,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class HefzDatabase : RoomDatabase() {
     abstract fun bookmarks(): BookmarkDao
