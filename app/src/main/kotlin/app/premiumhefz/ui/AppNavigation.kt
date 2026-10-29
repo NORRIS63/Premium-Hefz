@@ -31,6 +31,7 @@ import app.premiumhefz.ui.bookmarks.BookmarksScreen
 import app.premiumhefz.ui.browse.BrowseScreen
 import app.premiumhefz.ui.asma.AsmaScreen
 import app.premiumhefz.ui.dhikr.DhikrScreen
+import app.premiumhefz.ui.surah.SurahProgressScreen
 import app.premiumhefz.ui.hadith.HadithDetailScreen
 import app.premiumhefz.ui.hadith.HadithLibraryScreen
 import app.premiumhefz.ui.home.HomeScreen
@@ -54,6 +55,7 @@ object Routes {
     const val RUQYAH = "ruqyah"
     const val ASMA = "asma"
     const val DHIKR = "dhikr"
+    const val SURAH_PROGRESS = "surah_progress"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
@@ -131,6 +133,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenRuqyah = { nav.navigate(Routes.RUQYAH) },
                     onOpenAsma = { nav.navigate(Routes.ASMA) },
                     onOpenDhikr = { nav.navigate(Routes.DHIKR) },
+                    onOpenSurahProgress = { nav.navigate(Routes.SURAH_PROGRESS) },
                     showWelcome = showWelcome
                 )
             }
@@ -164,6 +167,12 @@ fun AppNavigation(showWelcome: Boolean = false) {
             }
             composable(Routes.DHIKR) {
                 DhikrScreen(onBack = { nav.popBackStack() })
+            }
+            composable(Routes.SURAH_PROGRESS) {
+                SurahProgressScreen(
+                    onBack = { nav.popBackStack() },
+                    onOpenPage = { nav.navigate(Routes.reader(it)) }
+                )
             }
             composable(
                 route = Routes.HADITH_DETAIL,

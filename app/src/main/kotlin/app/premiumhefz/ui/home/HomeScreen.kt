@@ -46,6 +46,7 @@ import kotlin.random.Random
 import kotlinx.coroutines.delay
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
@@ -72,6 +73,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -121,6 +123,7 @@ data class HomeUiState(
     val distinctPagesRead: Int = 0,
     val weekCounts: List<Int> = List(7) { 0 },
     val distinctPages: List<Int> = emptyList(),
+    val activeDays: List<Long> = emptyList(),
     val recentBookmarks: List<BookmarkEntity> = emptyList()
 )
 
@@ -135,7 +138,7 @@ private data class HomeMeta(
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModel(repo: HefzRepository, pack: PagePack, hadithRepo: HadithRepository) : ViewModel() {
+class HomeViewModel(private val repo: HefzRepository, pack: PagePack, hadithRepo: HadithRepository) : ViewModel() {
     private val progress = combine(repo.readingPosition, repo.pagesReadToday(), repo.activeDays) { position, read, days ->
         Triple(position, read, days)
     }
@@ -169,9 +172,14 @@ class HomeViewModel(repo: HefzRepository, pack: PagePack, hadithRepo: HadithRepo
             distinctPagesRead = m.distinctPagesRead,
             weekCounts = m.weekCounts,
             distinctPages = m.distinctPages,
+            activeDays = days,
             recentBookmarks = m.recentBookmarks
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
+
+    fun changeGoal(delta: Int) {
+        repo.updateSettings { it.copy(dailyReadGoal = it.dailyReadGoal + delta) }
+    }
 
     private val hadithReload = MutableStateFlow(0)
     val hadithDay: StateFlow<DayState> = combine(repo.today(), hadithReload) { day, _ -> day }
@@ -195,6 +203,7 @@ fun HomeScreen(
     onOpenRuqyah: () -> Unit,
     onOpenAsma: () -> Unit,
     onOpenDhikr: () -> Unit,
+    onOpenSurahProgress: () -> Unit,
     showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
@@ -214,7 +223,7 @@ fun HomeScreen(
         HomeHeader(state.pack)
         if (!state.pack.complete) PagesMissingCard(state.pack, onImportPages)
         ContinueCard(state.lastPage, index, onContinue)
-        TodayCard(state.pagesReadToday, state.dailyGoal, state.streak)
+        TodayCard(state.pagesReadToday, state.dailyGoal, state.streak, vm::changeGoal)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             QuickTile(
                 label = stringResource(R.string.home_quick_read),
@@ -238,7 +247,9 @@ fun HomeScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
-        ProgressCard(state.distinctPagesRead, state.weekCounts)
+        ProgressCard(state.distinctPagesRead, state.weekCounts, onOpenSurahProgress)
+        CalendarCard(state.activeDays)
+        PageOfDayCard(index, onContinue)
         HadithDayCard(
             state = hadithDay,
             onOpen = { hadith -> onOpenHadithDetail(hadith.book.id, hadith.number) },
@@ -779,7 +790,7 @@ private fun createNoiseBitmap(sizePx: Int = 192): ImageBitmap {
 }
 
 @Composable
-private fun TodayCard(read: Int, goal: Int, streak: Int) {
+private fun TodayCard(read: Int, goal: Int, streak: Int, onGoalChange: (Int) -> Unit) {
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(Modifier.fillMaxWidth().padding(18.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -802,12 +813,23 @@ private fun TodayCard(read: Int, goal: Int, streak: Int) {
             )
             Spacer(Modifier.height(10.dp))
             GoldProgress(fraction = read.toFloat() / goal.toFloat())
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = { onGoalChange(-1) }) { Text("\u2212") }
+                OutlinedButton(onClick = { onGoalChange(1) }) { Text("+") }
+                Text(
+                    text = stringResource(R.string.home_goal_change_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ProgressCard(distinctPagesRead: Int, weekCounts: List<Int>) {
+private fun ProgressCard(distinctPagesRead: Int, weekCounts: List<Int>, onOpenSurahProgress: () -> Unit) {
     val total = PageCoordinates.PAGE_COUNT
     val fraction = distinctPagesRead.toFloat() / total.toFloat()
     val percent = (fraction * 100).roundToInt()
@@ -869,6 +891,130 @@ private fun ProgressCard(distinctPagesRead: Int, weekCounts: List<Int>) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(Modifier.height(10.dp))
+            TextButton(onClick = onOpenSurahProgress) {
+                Text(stringResource(R.string.home_surah_progress_link))
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalendarCard(activeDays: List<Long>) {
+    val active = activeDays.toSet()
+    val today = Dates.epochDay(System.currentTimeMillis())
+    val cal = java.util.Calendar.getInstance()
+    val monthName = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.ENGLISH).format(cal.time)
+    val daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)
+    cal.set(java.util.Calendar.DAY_OF_MONTH, 1)
+    val leading = cal.get(java.util.Calendar.DAY_OF_WEEK) - 1
+    val dayLetters = arrayOf("S", "M", "T", "W", "T", "F", "S")
+    val cells: List<Int?> = List(leading) { null } + (1..daysInMonth).toList()
+    val padded = cells + List((7 - cells.size % 7) % 7) { null }
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(Modifier.fillMaxWidth().padding(18.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = stringResource(R.string.home_calendar_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = monthName,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.brand.gold
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth()) {
+                dayLetters.forEach { letter ->
+                    Text(
+                        text = letter,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            padded.chunked(7).forEach { week ->
+                Row(Modifier.fillMaxWidth()) {
+                    week.forEach { day ->
+                        Box(
+                            modifier = Modifier.weight(1f).aspectRatio(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (day != null) {
+                                val dayCal = (cal.clone() as java.util.Calendar).apply {
+                                    set(java.util.Calendar.DAY_OF_MONTH, day)
+                                }
+                                val epoch = Dates.epochDay(dayCal.timeInMillis)
+                                val isRead = epoch in active
+                                val isToday = epoch == today
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (isRead) MaterialTheme.brand.gold.copy(alpha = 0.22f)
+                                            else MaterialTheme.colorScheme.surfaceContainer
+                                        )
+                                        .border(
+                                            width = if (isToday) 1.5.dp else 0.dp,
+                                            color = if (isToday) MaterialTheme.brand.gold else MaterialTheme.colorScheme.surfaceContainer,
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = day.toString(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (isRead) MaterialTheme.brand.gold else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PageOfDayCard(index: QuranIndex, onOpenPage: (Int) -> Unit) {
+    val today = Dates.epochDay(System.currentTimeMillis())
+    val page = PageCoordinates.FIRST_PAGE + (today % PageCoordinates.PAGE_COUNT).toInt()
+    val label = index.surahLabel(page)
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        onClick = { onOpenPage(page) },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(18.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.home_page_of_day_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(R.string.home_page_of_day_fmt, page),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
         }
     }
 }
