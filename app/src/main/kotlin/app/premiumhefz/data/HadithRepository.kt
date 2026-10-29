@@ -157,9 +157,9 @@ class HadithRepository(context: Context) {
             entries += HadithEntry(
                 number = n,
                 section = h.optInt("s", 0),
-                arabic = araTexts.optString(n, null),
-                bengali = benTexts.optString(n, null),
-                inBookRef = refs?.optString("in-book", null),
+                arabic = if (araTexts.has(n)) araTexts.optString(n) else null,
+                bengali = if (benTexts.has(n)) benTexts.optString(n) else null,
+                inBookRef = if (refs != null && refs.has("in-book")) refs.optString("in-book") else null,
                 grades = grades
             )
         }
