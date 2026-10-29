@@ -194,6 +194,7 @@ fun HomeScreen(
     onOpenHadithLibrary: () -> Unit,
     onOpenRuqyah: () -> Unit,
     onOpenAsma: () -> Unit,
+    onOpenDhikr: () -> Unit,
     showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
@@ -353,6 +354,31 @@ fun HomeScreen(
                     )
                     Text(
                         text = stringResource(R.string.asma_sub),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+        }
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            onClick = onOpenDhikr,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.dhikr_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.dhikr_sub),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

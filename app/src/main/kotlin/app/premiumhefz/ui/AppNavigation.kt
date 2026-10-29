@@ -30,6 +30,7 @@ import app.premiumhefz.domain.PageCoordinates
 import app.premiumhefz.ui.bookmarks.BookmarksScreen
 import app.premiumhefz.ui.browse.BrowseScreen
 import app.premiumhefz.ui.asma.AsmaScreen
+import app.premiumhefz.ui.dhikr.DhikrScreen
 import app.premiumhefz.ui.hadith.HadithDetailScreen
 import app.premiumhefz.ui.hadith.HadithLibraryScreen
 import app.premiumhefz.ui.home.HomeScreen
@@ -52,6 +53,7 @@ object Routes {
     const val HADITH_DETAIL = "hadith/{book}/{number}"
     const val RUQYAH = "ruqyah"
     const val ASMA = "asma"
+    const val DHIKR = "dhikr"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
@@ -128,6 +130,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenHadithLibrary = { nav.navigate(Routes.HADITH_LIBRARY) },
                     onOpenRuqyah = { nav.navigate(Routes.RUQYAH) },
                     onOpenAsma = { nav.navigate(Routes.ASMA) },
+                    onOpenDhikr = { nav.navigate(Routes.DHIKR) },
                     showWelcome = showWelcome
                 )
             }
@@ -158,6 +161,9 @@ fun AppNavigation(showWelcome: Boolean = false) {
             }
             composable(Routes.ASMA) {
                 AsmaScreen(onBack = { nav.popBackStack() })
+            }
+            composable(Routes.DHIKR) {
+                DhikrScreen(onBack = { nav.popBackStack() })
             }
             composable(
                 route = Routes.HADITH_DETAIL,
