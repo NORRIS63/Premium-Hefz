@@ -15,6 +15,7 @@ class HefzRepository(db: HefzDatabase, private val settingsStore: SettingsStore)
     private val bookmarkDao = db.bookmarks()
     private val readingDao = db.reading()
     private val hifzDao = db.hifz()
+    private val revisionDao = db.revision()
 
     val settings: StateFlow<AppSettings> = settingsStore.settings
 
@@ -32,6 +33,17 @@ class HefzRepository(db: HefzDatabase, private val settingsStore: SettingsStore)
 
     suspend fun unmarkMemorized(page: Int) {
         hifzDao.deleteByPage(page)
+    }
+
+    // The UI works in page numbers only, never in entities (see Hifz).
+    val revisionPages: Flow<List<Int>> = revisionDao.observeAll().map { list -> list.map { it.page } }
+
+    suspend fun addRevisionPage(page: Int) {
+        revisionDao.insert(RevisionEntity(page, System.currentTimeMillis()))
+    }
+
+    suspend fun removeRevisionPage(page: Int) {
+        revisionDao.deleteByPage(page)
     }
 
     /** Pages read per day for the last 7 days (today included), re-emitted at midnight. */

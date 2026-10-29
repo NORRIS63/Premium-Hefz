@@ -18,7 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * that failure mode entirely. Do not re-enable it without committing schema JSONs.
  */
 @Database(
-    entities = [BookmarkEntity::class, ReadingPositionEntity::class, ReadEventEntity::class, HifzEntity::class],
+    entities = [BookmarkEntity::class, ReadingPositionEntity::class, ReadEventEntity::class, HifzEntity::class, RevisionEntity::class],
     version = 2,
     exportSchema = false
 )
@@ -26,11 +26,15 @@ abstract class HefzDatabase : RoomDatabase() {
     abstract fun bookmarks(): BookmarkDao
     abstract fun reading(): ReadingDao
     abstract fun hifz(): HifzDao
+    abstract fun revision(): RevisionDao
 
     companion object {
+        // Version 2 never shipped (the Hifz commit stayed local), so the
+        // revision table folds into this same migration instead of a v3.
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS `hifz_pages` (`page` INTEGER NOT NULL, `memorizedAt` INTEGER NOT NULL, PRIMARY KEY(`page`))")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `revision_pages` (`page` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`page`))")
             }
         }
 

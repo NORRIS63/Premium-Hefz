@@ -32,6 +32,7 @@ import app.premiumhefz.ui.browse.BrowseScreen
 import app.premiumhefz.ui.asma.AsmaScreen
 import app.premiumhefz.ui.dhikr.DhikrScreen
 import app.premiumhefz.ui.hifz.HifzScreen
+import app.premiumhefz.ui.revision.RevisionScreen
 import app.premiumhefz.ui.surah.SurahProgressScreen
 import app.premiumhefz.ui.hadith.HadithDetailScreen
 import app.premiumhefz.ui.hadith.HadithLibraryScreen
@@ -58,6 +59,7 @@ object Routes {
     const val DHIKR = "dhikr"
     const val SURAH_PROGRESS = "surah_progress"
     const val HIFZ = "hifz"
+    const val REVISION = "revision"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
@@ -137,6 +139,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenDhikr = { nav.navigate(Routes.DHIKR) },
                     onOpenSurahProgress = { nav.navigate(Routes.SURAH_PROGRESS) },
                     onOpenHifz = { nav.navigate(Routes.HIFZ) },
+                    onOpenRevision = { nav.navigate(Routes.REVISION) },
                     showWelcome = showWelcome
                 )
             }
@@ -179,6 +182,13 @@ fun AppNavigation(showWelcome: Boolean = false) {
             }
             composable(Routes.HIFZ) {
                 HifzScreen(
+                    index = LocalContainer.current.quranIndex,
+                    onBack = { nav.popBackStack() },
+                    onOpenPage = { nav.navigate(Routes.reader(it)) }
+                )
+            }
+            composable(Routes.REVISION) {
+                RevisionScreen(
                     index = LocalContainer.current.quranIndex,
                     onBack = { nav.popBackStack() },
                     onOpenPage = { nav.navigate(Routes.reader(it)) }

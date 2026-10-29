@@ -19,6 +19,18 @@ interface HifzDao {
 }
 
 @Dao
+interface RevisionDao {
+    @Query("SELECT * FROM revision_pages ORDER BY page ASC")
+    fun observeAll(): Flow<List<RevisionEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(entity: RevisionEntity)
+
+    @Query("DELETE FROM revision_pages WHERE page = :page")
+    suspend fun deleteByPage(page: Int)
+}
+
+@Dao
 interface BookmarkDao {
     @Query("SELECT * FROM bookmarks ORDER BY createdAt DESC, id DESC")
     fun observeAll(): Flow<List<BookmarkEntity>>

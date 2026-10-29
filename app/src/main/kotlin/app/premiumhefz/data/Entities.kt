@@ -35,3 +35,10 @@ data class HifzEntity(
     @PrimaryKey val page: Int,
     val memorizedAt: Long
 )
+
+/** One row per page due for revision. */
+@Entity(tableName = "revision_pages")
+data class RevisionEntity(
+    @PrimaryKey val page: Int,
+    val addedAt: Long
+)
