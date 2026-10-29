@@ -211,6 +211,18 @@
     <string name="surah_progress_title">Surah progress</string>
     <string name="surah_progress_meta_fmt">Surah %1$d · %2$d of %3$d pages</string>
     <string name="surah_progress_percent_fmt">%d%%</string>
+
+    <!-- Hifz -->
+    <string name="hifz_title">Hifz</string>
+    <string name="hifz_sub">Memorize pages · Track progress</string>
+    <string name="hifz_progress_fmt">%1$d of %2$d pages memorized</string>
+    <string name="hifz_add_hint">Page number</string>
+    <string name="hifz_add">Add</string>
+    <string name="hifz_open">Open</string>
+    <string name="hifz_remove">Remove</string>
+    <string name="hifz_empty">No pages memorized yet. Add a page number above to start.</string>
+    <string name="hifz_invalid">Enter a page from 2 to 611</string>
+    <string name="hifz_page_fmt">Page %d</string>
     <string name="home_progress_title">Progress</string>
     <string name="home_khatmah_fmt">%1$d of 610 pages · %2$d%%</string>
     <string name="home_week_caption">Last 7 days</string>

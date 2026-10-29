@@ -28,3 +28,10 @@ data class ReadEventEntity(
     val epochDay: Long,
     val firstReadAt: Long
 )
+
+/** One row per memorized printed page. */
+@Entity(tableName = "hifz_pages")
+data class HifzEntity(
+    @PrimaryKey val page: Int,
+    val memorizedAt: Long
+)

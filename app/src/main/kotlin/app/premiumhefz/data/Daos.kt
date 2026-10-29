@@ -7,6 +7,18 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+interface HifzDao {
+    @Query("SELECT * FROM hifz_pages ORDER BY page ASC")
+    fun observeAll(): Flow<List<HifzEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(entity: HifzEntity)
+
+    @Query("DELETE FROM hifz_pages WHERE page = :page")
+    suspend fun deleteByPage(page: Int)
+}
+
+@Dao
 interface BookmarkDao {
     @Query("SELECT * FROM bookmarks ORDER BY createdAt DESC, id DESC")
     fun observeAll(): Flow<List<BookmarkEntity>>

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 class HefzRepository(db: HefzDatabase, private val settingsStore: SettingsStore) {
     private val bookmarkDao = db.bookmarks()
     private val readingDao = db.reading()
+    private val hifzDao = db.hifz()
 
     val settings: StateFlow<AppSettings> = settingsStore.settings
 
@@ -23,6 +24,15 @@ class HefzRepository(db: HefzDatabase, private val settingsStore: SettingsStore)
     val activeDays: Flow<List<Long>> = readingDao.observeActiveDays()
     val distinctPagesRead: Flow<Int> = readingDao.observeDistinctPagesRead()
     val distinctPages: Flow<List<Int>> = readingDao.observeDistinctPages()
+    val memorizedPages: Flow<List<Int>> = hifzDao.observeAll().map { list -> list.map { it.page } }
+
+    suspend fun markMemorized(page: Int) {
+        hifzDao.insert(HifzEntity(page, System.currentTimeMillis()))
+    }
+
+    suspend fun unmarkMemorized(page: Int) {
+        hifzDao.deleteByPage(page)
+    }
 
     /** Pages read per day for the last 7 days (today included), re-emitted at midnight. */
     fun weekCounts(): Flow<List<Int>> = today().flatMapLatest { today ->
