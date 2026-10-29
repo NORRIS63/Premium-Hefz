@@ -30,6 +30,12 @@ interface BookmarkDao {
     suspend fun deleteById(id: Long)
 }
 
+/** One day's read-page count, for the weekly chart. */
+data class DayCount(
+    val epochDay: Long,
+    val count: Int
+)
+
 @Dao
 interface ReadingDao {
     @Query("SELECT * FROM reading_position WHERE id = 1")
@@ -46,4 +52,13 @@ interface ReadingDao {
 
     @Query("SELECT DISTINCT epochDay FROM read_events ORDER BY epochDay DESC")
     fun observeActiveDays(): Flow<List<Long>>
+
+    @Query("SELECT COUNT(DISTINCT page) FROM read_events")
+    fun observeDistinctPagesRead(): Flow<Int>
+
+    @Query("SELECT DISTINCT page FROM read_events")
+    fun observeDistinctPages(): Flow<List<Int>>
+
+    @Query("SELECT epochDay, COUNT(*) AS count FROM read_events WHERE epochDay >= :fromDay GROUP BY epochDay")
+    fun observeCountsSince(fromDay: Long): Flow<List<DayCount>>
 }

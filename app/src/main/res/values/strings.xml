@@ -153,4 +153,14 @@
     <string name="home_companion_title">Islamic companion</string>
     <string name="home_companion_sajdah">Sajdah verses</string>
     <string name="home_companion_sajdah_sub">15 marked verses</string>
+    <string name="home_progress_title">Progress</string>
+    <string name="home_khatmah_fmt">%1$d of 610 pages · %2$d%%</string>
+    <string name="home_week_caption">Last 7 days</string>
+    <string name="home_recent_title">Recent bookmarks</string>
+    <string name="home_recent_page_only">Quran</string>
+    <string name="home_recent_page_fmt">Page %1$d</string>
+    <string name="home_juz_title">Juz progress</string>
+    <string name="home_juz_done_fmt">%1$d of 30 complete</string>
+    <string name="home_juz_hint">Tap a juz to open its first page.</string>
+    <string name="home_juz_cell_fmt">Juz %1$d, %2$d%% read</string>
 </resources>

@@ -24,6 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import app.premiumhefz.ui.theme.Emerald100
@@ -43,6 +46,7 @@ import kotlinx.coroutines.delay
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -77,6 +81,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.premiumhefz.R
+import app.premiumhefz.data.BookmarkEntity
 import app.premiumhefz.data.HefzRepository
 import app.premiumhefz.data.PagePack
 import app.premiumhefz.data.PackStatus
@@ -103,25 +108,54 @@ data class HomeUiState(
     val dailyGoal: Int = 5,
     val streak: Int = 0,
     val bookmarkCount: Int = 0,
-    val pack: PackStatus = PackStatus(0, PageCoordinates.PAGE_COUNT, null)
+    val pack: PackStatus = PackStatus(0, PageCoordinates.PAGE_COUNT, null),
+    val distinctPagesRead: Int = 0,
+    val weekCounts: List<Int> = List(7) { 0 },
+    val distinctPages: List<Int> = emptyList(),
+    val recentBookmarks: List<BookmarkEntity> = emptyList()
+)
+
+private data class HomeMeta(
+    val bookmarkCount: Int,
+    val recentBookmarks: List<BookmarkEntity>,
+    val goal: Int,
+    val status: PackStatus,
+    val distinctPagesRead: Int,
+    val weekCounts: List<Int>,
+    val distinctPages: List<Int>
 )
 
 class HomeViewModel(repo: HefzRepository, pack: PagePack) : ViewModel() {
     private val progress = combine(repo.readingPosition, repo.pagesReadToday(), repo.activeDays) { position, read, days ->
         Triple(position, read, days)
     }
-    private val meta = combine(repo.bookmarks, repo.settings, pack.status) { bookmarks, settings, status ->
-        Triple(bookmarks.size, settings.dailyReadGoal, status)
+    private val meta = combine(
+        repo.bookmarks, repo.settings, pack.status,
+        repo.distinctPagesRead, repo.weekCounts(), repo.distinctPages
+    ) { bookmarks, settings, status, distinct, week, pages ->
+        HomeMeta(
+            bookmarkCount = bookmarks.size,
+            recentBookmarks = bookmarks.take(3),
+            goal = settings.dailyReadGoal,
+            status = status,
+            distinctPagesRead = distinct,
+            weekCounts = week,
+            distinctPages = pages
+        )
     }
 
-    val state: StateFlow<HomeUiState> = combine(progress, meta) { (position, read, days), (bookmarkCount, goal, status) ->
+    val state: StateFlow<HomeUiState> = combine(progress, meta) { (position, read, days), m ->
         HomeUiState(
             lastPage = position,
             pagesReadToday = read,
-            dailyGoal = goal,
+            dailyGoal = m.goal,
             streak = Streaks.current(days.toSet(), Dates.epochDay(System.currentTimeMillis())),
-            bookmarkCount = bookmarkCount,
-            pack = status
+            bookmarkCount = m.bookmarkCount,
+            pack = m.status,
+            distinctPagesRead = m.distinctPagesRead,
+            weekCounts = m.weekCounts,
+            distinctPages = m.distinctPages,
+            recentBookmarks = m.recentBookmarks
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 }
@@ -175,6 +209,11 @@ fun HomeScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
+        ProgressCard(state.distinctPagesRead, state.weekCounts)
+        if (state.recentBookmarks.isNotEmpty()) {
+            RecentBookmarksRow(state.recentBookmarks, index, onContinue)
+        }
+        JuzMapCard(state.distinctPages, index, onContinue)
         Text(
             text = stringResource(R.string.home_companion_title),
             style = MaterialTheme.typography.titleMedium,
@@ -627,6 +666,197 @@ private fun TodayCard(read: Int, goal: Int, streak: Int) {
             )
             Spacer(Modifier.height(10.dp))
             GoldProgress(fraction = read.toFloat() / goal.toFloat())
+        }
+    }
+}
+
+@Composable
+private fun ProgressCard(distinctPagesRead: Int, weekCounts: List<Int>) {
+    val total = PageCoordinates.PAGE_COUNT
+    val fraction = distinctPagesRead.toFloat() / total.toFloat()
+    val percent = (fraction * 100).roundToInt()
+    val max = (weekCounts.maxOrNull() ?: 0).coerceAtLeast(1)
+    val today = Dates.epochDay(System.currentTimeMillis())
+    val dayLetters = arrayOf("S", "M", "T", "W", "T", "F", "S")
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(Modifier.fillMaxWidth().padding(18.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = stringResource(R.string.home_progress_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = stringResource(R.string.home_khatmah_fmt, distinctPagesRead, percent),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.brand.gold
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+            GoldProgress(fraction = fraction)
+            Spacer(Modifier.height(14.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                weekCounts.forEachIndexed { i, count ->
+                    val day = today - 6 + i
+                    val letter = dayLetters[((day + 4) % 7).toInt()]
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height((4 + 52 * count / max).dp)
+                                    .clip(RoundedCornerShape(3.dp))
+                                    .background(
+                                        if (count > 0) MaterialTheme.brand.gold
+                                        else MaterialTheme.colorScheme.surfaceVariant
+                                    )
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = letter,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (i == 6) MaterialTheme.brand.gold else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.home_week_caption),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentBookmarksRow(
+    bookmarks: List<BookmarkEntity>,
+    index: QuranIndex,
+    onOpenPage: (Int) -> Unit
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.home_recent_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            bookmarks.forEach { bookmark ->
+                val surah = index.surahOpenAt(bookmark.page)
+                Surface(
+                    shape = MaterialTheme.shapes.large,
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    onClick = { onOpenPage(bookmark.page) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            text = surah?.nameEn ?: stringResource(R.string.home_recent_page_only),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = stringResource(R.string.home_recent_page_fmt, bookmark.page),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun JuzMapCard(
+    distinctPages: List<Int>,
+    index: QuranIndex,
+    onOpenPage: (Int) -> Unit
+) {
+    val perJuz = remember(distinctPages) {
+        val counts = IntArray(31)
+        distinctPages.forEach { page ->
+            index.juzForPage(page)?.let { counts[it.number]++ }
+        }
+        counts
+    }
+    val complete = (1..30).count { juz ->
+        val total = index.juzPageCount(juz)
+        total > 0 && perJuz[juz] >= total
+    }
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(Modifier.fillMaxWidth().padding(18.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = stringResource(R.string.home_juz_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = stringResource(R.string.home_juz_done_fmt, complete),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.brand.gold
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                (1..30).chunked(6).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        row.forEach { juz ->
+                            val total = index.juzPageCount(juz)
+                            val fraction = if (total > 0) perJuz[juz].toFloat() / total else 0f
+                            val startPage = index.juzByNumber(juz)?.startPage
+                            val cellColor = when {
+                                fraction >= 1f -> MaterialTheme.brand.gold
+                                fraction > 0f -> MaterialTheme.brand.goldSoft
+                                else -> MaterialTheme.colorScheme.surfaceVariant
+                            }
+                            val textColor = when {
+                                fraction >= 1f -> Emerald950
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                            val description = stringResource(
+                                R.string.home_juz_cell_fmt, juz, (fraction * 100).roundToInt()
+                            )
+                            Surface(
+                                shape = MaterialTheme.shapes.small,
+                                color = cellColor,
+                                onClick = { if (startPage != null) onOpenPage(startPage) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .semantics { contentDescription = description }
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = juz.toString(),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = textColor
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.home_juz_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

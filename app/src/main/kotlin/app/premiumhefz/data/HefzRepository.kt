@@ -21,6 +21,16 @@ class HefzRepository(db: HefzDatabase, private val settingsStore: SettingsStore)
     val bookmarkedPages: Flow<Set<Int>> = bookmarkDao.observePages().map { it.toSet() }
     val readingPosition: Flow<Int?> = readingDao.observePosition().map { it?.page }
     val activeDays: Flow<List<Long>> = readingDao.observeActiveDays()
+    val distinctPagesRead: Flow<Int> = readingDao.observeDistinctPagesRead()
+    val distinctPages: Flow<List<Int>> = readingDao.observeDistinctPages()
+
+    /** Pages read per day for the last 7 days (today included), re-emitted at midnight. */
+    fun weekCounts(): Flow<List<Int>> = today().flatMapLatest { today ->
+        readingDao.observeCountsSince(today - 6).map { rows ->
+            val byDay = rows.associate { it.epochDay to it.count }
+            (today - 6..today).map { byDay[it] ?: 0 }
+        }
+    }
 
     /** Emits again at midnight (checked once a minute) so "today" never goes stale. */
     fun pagesReadToday(): Flow<Int> = today().flatMapLatest { readingDao.observePagesReadOn(it) }
