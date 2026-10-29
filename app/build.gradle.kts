@@ -13,8 +13,8 @@ android {
         applicationId = "app.premiumhefz"
         minSdk = 23
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 102
+        versionName = "1.0.2"
     }
 
     buildTypes {

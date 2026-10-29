@@ -27,7 +27,7 @@ jobs:
       - name: Publish APK to Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.0-build.${{ github.run_number }}
+          tag_name: v1.0.2-build.${{ github.run_number }}
           name: Premium Hefz release build ${{ github.run_number }}
           prerelease: true
           files: app/build/outputs/apk/release/app-release.apk
