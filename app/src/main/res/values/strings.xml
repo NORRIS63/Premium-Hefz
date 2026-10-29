@@ -113,7 +113,7 @@
     <string name="settings_reduce_motion_hint">Skips the opening animation.</string>
     <string name="settings_pages_status_fmt">%1$d of %2$d pages on this device</string>
     <string name="settings_about">About</string>
-    <string name="settings_about_body">The Quran pages are the original page images from Hefz Quran, kept byte-identical. This app contains no separate Quran text and has no internet permission.</string>
+    <string name="settings_about_body">The Quran pages are the original page images from Hefz Quran, kept byte-identical. This app contains no separate Quran text. Quran pages work fully offline; Hadith and Asma ul Husna load online when available and fall back to the last loaded content offline.</string>
     <string name="settings_version_fmt">Version %1$s</string>
 
     <!-- Page import -->
@@ -145,6 +145,27 @@
     <string name="home_companion_title">Islamic companion</string>
     <string name="home_companion_sajdah">Sajdah verses</string>
     <string name="home_companion_sajdah_sub">15 marked verses</string>
+
+    <!-- Hadith -->
+    <string name="hadith_day_title">Hadith of the Day</string>
+    <string name="hadith_day_loading">Loading today’s hadith…</string>
+    <string name="hadith_day_offline">Offline · showing the last loaded hadith</string>
+    <string name="hadith_day_unavailable">Couldn’t load today’s hadith. Connect to the internet once to load it.</string>
+    <string name="hadith_ref_fmt">%1$s · Hadith %2$s</string>
+    <string name="hadith_retry">Retry</string>
+    <string name="hadith_detail_inbook_fmt">In-book reference %1$s</string>
+    <string name="hadith_detail_source">Texts: isnady-data project · Bengali: Islamic Foundation Bangladesh translation.</string>
+    <string name="hadith_grades_title">Grading</string>
+    <string name="hadith_no_bengali">Bengali translation not available for this hadith.</string>
+    <string name="hadith_loading_book">Loading book…</string>
+    <string name="hadith_load_failed">Couldn’t load this book. Check your connection and try again.</string>
+    <string name="hadith_library_title">Hadith library</string>
+    <string name="hadith_library_sub">8 books · Arabic + Bengali</string>
+    <string name="hadith_library_footer">Hadith texts: isnady-data (github.com/bayramkotan/isnady-data), from fawazahmed0/hadith-api. License: Unlicense. Bengali is the Islamic Foundation Bangladesh translation; where it is missing for a hadith, Arabic is shown with a note.</string>
+    <string name="hadith_book_meta_fmt">%1$s · %2$d hadith</string>
+    <string name="hadith_count_fmt">%1$d hadith</string>
+    <string name="hadith_list_number_fmt">Hadith %1$s</string>
+    <string name="hadith_all_hadith">All hadith</string>
     <string name="home_progress_title">Progress</string>
     <string name="home_khatmah_fmt">%1$d of 610 pages · %2$d%%</string>
     <string name="home_week_caption">Last 7 days</string>

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -66,6 +67,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -82,10 +84,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.premiumhefz.R
 import app.premiumhefz.data.BookmarkEntity
+import app.premiumhefz.data.DayState
+import app.premiumhefz.data.HadithRepository
 import app.premiumhefz.data.HefzRepository
 import app.premiumhefz.data.PagePack
 import app.premiumhefz.data.PackStatus
 import app.premiumhefz.domain.Dates
+import app.premiumhefz.domain.DayHadith
+import app.premiumhefz.domain.formatDayLabel
 import app.premiumhefz.domain.HijriDate
 import app.premiumhefz.domain.PageCoordinates
 import app.premiumhefz.domain.QuranIndex
@@ -97,9 +103,12 @@ import app.premiumhefz.ui.components.QuickTile
 import app.premiumhefz.ui.components.StarWatermark
 import app.premiumhefz.ui.components.WelcomeRibbon
 import app.premiumhefz.ui.theme.brand
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
 data class HomeUiState(
@@ -125,7 +134,8 @@ private data class HomeMeta(
     val distinctPages: List<Int>
 )
 
-class HomeViewModel(repo: HefzRepository, pack: PagePack) : ViewModel() {
+@OptIn(ExperimentalCoroutinesApi::class)
+class HomeViewModel(repo: HefzRepository, pack: PagePack, hadithRepo: HadithRepository) : ViewModel() {
     private val progress = combine(repo.readingPosition, repo.pagesReadToday(), repo.activeDays) { position, read, days ->
         Triple(position, read, days)
     }
@@ -162,6 +172,15 @@ class HomeViewModel(repo: HefzRepository, pack: PagePack) : ViewModel() {
             recentBookmarks = m.recentBookmarks
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
+
+    private val hadithReload = MutableStateFlow(0)
+    val hadithDay: StateFlow<DayState> = combine(repo.today(), hadithReload) { day, _ -> day }
+        .mapLatest { day -> hadithRepo.dayHadith(day) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DayState.Loading)
+
+    fun retryHadith() {
+        hadithReload.value += 1
+    }
 }
 
 @Composable
@@ -171,11 +190,14 @@ fun HomeScreen(
     onOpenBookmarks: () -> Unit,
     onImportPages: () -> Unit,
     onOpenSajdah: () -> Unit,
+    onOpenHadithDetail: (String, String) -> Unit,
+    onOpenHadithLibrary: () -> Unit,
     showWelcome: Boolean = false
 ) {
     val index = LocalContainer.current.quranIndex
-    val vm: HomeViewModel = appViewModel { HomeViewModel(it.repository, it.pagePack) }
+    val vm: HomeViewModel = appViewModel { HomeViewModel(it.repository, it.pagePack, it.hadithRepository) }
     val state by vm.state.collectAsStateWithLifecycle()
+    val hadithDay by vm.hadithDay.collectAsStateWithLifecycle()
 
     Box(Modifier.fillMaxSize()) {
     Column(
@@ -214,6 +236,11 @@ fun HomeScreen(
             }
         }
         ProgressCard(state.distinctPagesRead, state.weekCounts)
+        HadithDayCard(
+            state = hadithDay,
+            onOpen = { hadith -> onOpenHadithDetail(hadith.book.id, hadith.number) },
+            onRetry = vm::retryHadith
+        )
         if (state.recentBookmarks.isNotEmpty()) {
             RecentBookmarksRow(state.recentBookmarks, index, onContinue)
         }
@@ -247,6 +274,33 @@ fun HomeScreen(
                     )
                     Text(
                         text = stringResource(R.string.home_companion_sajdah_sub),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+        }
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            onClick = onOpenHadithLibrary,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(painterResource(R.drawable.ic_book), contentDescription = null, tint = MaterialTheme.brand.gold)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.hadith_library_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.hadith_library_sub),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -861,6 +915,96 @@ private fun JuzMapCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+private fun HadithDayCard(state: DayState, onOpen: (DayHadith) -> Unit, onRetry: () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .clickable(enabled = state is DayState.Ready) {
+                if (state is DayState.Ready) onOpen(state.hadith)
+            }
+    ) {
+        Column(Modifier.fillMaxWidth().padding(18.dp)) {
+            Text(
+                text = stringResource(R.string.hadith_day_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            when (state) {
+                is DayState.Loading -> {
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = stringResource(R.string.hadith_day_loading),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                is DayState.Unavailable -> {
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = stringResource(R.string.hadith_day_unavailable),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.hadith_retry)) }
+                }
+                is DayState.Ready -> {
+                    val hadith = state.hadith
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = formatDayLabel(hadith.day),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.brand.gold
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = hadith.arabic,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Right
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = hadith.bengali,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.hadith_ref_fmt, hadith.book.title, hadith.number),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.brand.gold
+                        )
+                    }
+                    if (state.offline) {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.hadith_day_offline),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.brand.goldSoft
+                        )
+                    }
+                }
+            }
         }
     }
 }

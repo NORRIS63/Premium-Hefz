@@ -29,6 +29,8 @@ import app.premiumhefz.R
 import app.premiumhefz.domain.PageCoordinates
 import app.premiumhefz.ui.bookmarks.BookmarksScreen
 import app.premiumhefz.ui.browse.BrowseScreen
+import app.premiumhefz.ui.hadith.HadithDetailScreen
+import app.premiumhefz.ui.hadith.HadithLibraryScreen
 import app.premiumhefz.ui.home.HomeScreen
 import app.premiumhefz.ui.reader.ReaderScreen
 import app.premiumhefz.ui.sajdah.SajdahScreen
@@ -44,9 +46,12 @@ object Routes {
     const val SETUP = "setup"
     const val READER = "reader/{page}"
     const val SAJDAH = "sajdah"
+    const val HADITH_LIBRARY = "hadith_library"
+    const val HADITH_DETAIL = "hadith/{book}/{number}"
 
     fun browse(tab: Int) = "browse?tab=$tab"
     fun reader(page: Int) = "reader/$page"
+    fun hadithDetail(book: String, number: String) = "hadith/$book/$number"
 }
 
 private class TabItem(
@@ -115,6 +120,8 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onOpenBookmarks = { nav.navigateToTab(Routes.BOOKMARKS) },
                     onImportPages = { nav.navigate(Routes.SETUP) },
                     onOpenSajdah = { nav.navigate(Routes.SAJDAH) },
+                    onOpenHadithDetail = { book, number -> nav.navigate(Routes.hadithDetail(book, number)) },
+                    onOpenHadithLibrary = { nav.navigate(Routes.HADITH_LIBRARY) },
                     showWelcome = showWelcome
                 )
             }
@@ -131,6 +138,25 @@ fun AppNavigation(showWelcome: Boolean = false) {
             composable(Routes.SAJDAH) {
                 SajdahScreen(
                     onOpenPage = { nav.navigate(Routes.reader(it)) },
+                    onBack = { nav.popBackStack() }
+                )
+            }
+            composable(Routes.HADITH_LIBRARY) {
+                HadithLibraryScreen(
+                    onOpenDetail = { book, number -> nav.navigate(Routes.hadithDetail(book, number)) },
+                    onBack = { nav.popBackStack() }
+                )
+            }
+            composable(
+                route = Routes.HADITH_DETAIL,
+                arguments = listOf(
+                    navArgument("book") { type = NavType.StringType },
+                    navArgument("number") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                HadithDetailScreen(
+                    bookId = backStackEntry.arguments?.getString("book") ?: "",
+                    number = backStackEntry.arguments?.getString("number") ?: "",
                     onBack = { nav.popBackStack() }
                 )
             }
