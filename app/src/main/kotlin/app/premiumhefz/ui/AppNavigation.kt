@@ -134,7 +134,7 @@ fun AppNavigation(showWelcome: Boolean = false) {
                     onBack = { nav.popBackStack() }
                 )
             }
-            composable(Routes.SETTINGS) { SettingsScreen(onOpenSetup = { nav.navigate(Routes.SETUP) }) }
+            composable(Routes.SETTINGS) { SettingsScreen() }
             composable(Routes.SETUP) { SetupScreen(onBack = { nav.popBackStack() }) }
             composable(
                 route = Routes.READER,

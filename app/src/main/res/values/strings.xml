@@ -111,15 +111,7 @@
     <string name="settings_motion">Motion</string>
     <string name="settings_reduce_motion">Reduce motion</string>
     <string name="settings_reduce_motion_hint">Skips the opening animation.</string>
-    <string name="settings_pages">Quran pages</string>
     <string name="settings_pages_status_fmt">%1$d of %2$d pages on this device</string>
-    <string name="settings_pages_verified">Verified byte for byte against the original</string>
-    <string name="settings_pages_unverified">Not verified yet</string>
-    <string name="settings_import">Prepare pages</string>
-    <string name="settings_verify">Verify pages</string>
-    <string name="settings_verifying_fmt">Checking page %1$d of %2$d</string>
-    <string name="settings_verify_ok_fmt">All %1$d pages match the original byte for byte.</string>
-    <string name="settings_verify_bad_fmt">%1$d pages don’t match and %2$d are missing. Import again to repair them.</string>
     <string name="settings_about">About</string>
     <string name="settings_about_body">The Quran pages are the original page images from Hefz Quran, kept byte-identical. This app contains no separate Quran text and has no internet permission.</string>
     <string name="settings_version_fmt">Version %1$s</string>
