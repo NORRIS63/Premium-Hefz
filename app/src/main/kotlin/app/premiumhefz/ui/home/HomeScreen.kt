@@ -130,9 +130,13 @@ class HomeViewModel(repo: HefzRepository, pack: PagePack) : ViewModel() {
         Triple(position, read, days)
     }
     private val meta = combine(
-        repo.bookmarks, repo.settings, pack.status,
-        repo.distinctPagesRead, repo.weekCounts(), repo.distinctPages
-    ) { bookmarks, settings, status, distinct, week, pages ->
+        combine(repo.bookmarks, repo.settings, pack.status) { bookmarks, settings, status ->
+            Triple(bookmarks, settings, status)
+        },
+        combine(repo.distinctPagesRead, repo.weekCounts(), repo.distinctPages) { distinct, week, pages ->
+            Triple(distinct, week, pages)
+        }
+    ) { (bookmarks, settings, status), (distinct, week, pages) ->
         HomeMeta(
             bookmarkCount = bookmarks.size,
             recentBookmarks = bookmarks.take(3),
