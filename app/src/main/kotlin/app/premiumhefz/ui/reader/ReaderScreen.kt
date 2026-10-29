@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
@@ -12,12 +13,14 @@ import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -30,6 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,6 +42,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -48,6 +54,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -55,6 +62,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -62,10 +70,12 @@ import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -83,8 +93,10 @@ import app.premiumhefz.domain.PageCoordinates
 import app.premiumhefz.ui.LocalContainer
 import app.premiumhefz.ui.appViewModel
 import app.premiumhefz.ui.browse.GoToPageForm
+import app.premiumhefz.ui.theme.Emerald950
 import app.premiumhefz.ui.theme.Ink900
 import app.premiumhefz.ui.theme.Ivory100
+import app.premiumhefz.ui.theme.Ivory200
 import app.premiumhefz.ui.theme.LocalIsDarkTheme
 import app.premiumhefz.ui.theme.NightInk
 import app.premiumhefz.ui.theme.NightPaper
@@ -94,6 +106,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 class ReaderViewModel(private val repo: HefzRepository) : ViewModel() {
     val bookmarkedPages: StateFlow<Set<Int>> =
@@ -113,7 +126,8 @@ class ReaderViewModel(private val repo: HefzRepository) : ViewModel() {
     }
 }
 
-private class ToneStyle(val background: Color, val filter: ColorFilter?)
+/** [background] is the page image's paper colour; [margin] is the calm surround the page rests on. */
+private class ToneStyle(val background: Color, val filter: ColorFilter?, val margin: Color)
 
 /** Maps the page image's white paper to [paper] and its black ink to [ink]. Only affects drawing, never the file. */
 private fun toneMatrix(paper: Color, ink: Color): ColorMatrix = ColorMatrix(
@@ -131,9 +145,9 @@ private fun rememberToneStyle(tone: PageTone): ToneStyle {
     return remember(tone, dark) {
         val resolved = if (tone == PageTone.AUTO) (if (dark) PageTone.NIGHT else PageTone.PAPER) else tone
         when (resolved) {
-            PageTone.ORIGINAL -> ToneStyle(Color.White, null)
-            PageTone.PAPER -> ToneStyle(Ivory100, ColorFilter.colorMatrix(toneMatrix(paper = Ivory100, ink = Ink900)))
-            else -> ToneStyle(NightPaper, ColorFilter.colorMatrix(toneMatrix(paper = NightPaper, ink = NightInk)))
+            PageTone.ORIGINAL -> ToneStyle(Color.White, null, Ivory200)
+            PageTone.PAPER -> ToneStyle(Ivory100, ColorFilter.colorMatrix(toneMatrix(paper = Ivory100, ink = Ink900)), Ivory200)
+            else -> ToneStyle(NightPaper, ColorFilter.colorMatrix(toneMatrix(paper = NightPaper, ink = NightInk)), Emerald950)
         }
     }
 }
@@ -155,6 +169,8 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
     val currentPage = PageCoordinates.pageForPagerIndex(pagerState.currentPage)
 
     var barsVisible by rememberSaveable { mutableStateOf(true) }
+    // Bumped on every page-slider move so the bars stay up while the reader scrubs.
+    var scrubInteraction by remember { mutableIntStateOf(0) }
     var zoomed by remember { mutableStateOf(false) }
     var showGoTo by rememberSaveable { mutableStateOf(false) }
     val snackbarHost = remember { SnackbarHostState() }
@@ -168,10 +184,13 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
         onDispose { view.keepScreenOn = false }
     }
 
-    // Let the page have the screen after a moment; a tap brings the bars back.
-    LaunchedEffect(Unit) {
-        delay(3_000)
-        barsVisible = false
+    // Let the page have the screen after a moment; a tap brings the bars back, and
+    // scrubbing the page slider keeps them up while it is in use.
+    LaunchedEffect(barsVisible, scrubInteraction) {
+        if (barsVisible) {
+            delay(3_000)
+            barsVisible = false
+        }
     }
 
     // The last-read position follows the page the pager settles on.
@@ -199,7 +218,7 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
         }
     }
 
-    Box(Modifier.fillMaxSize().background(tone.background)) {
+    Box(Modifier.fillMaxSize().background(tone.margin)) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
@@ -243,9 +262,30 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
             )
         }
 
+        AnimatedVisibility(
+            visible = barsVisible,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            ReaderBottomBar(
+                currentPage = currentPage,
+                pagerIndex = pagerState.currentPage,
+                onScrub = { index ->
+                    scope.launch { pagerState.scrollToPage(index) }
+                },
+                onScrubInteraction = { scrubInteraction++ }
+            )
+        }
+
         SnackbarHost(
             hostState = snackbarHost,
-            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp)
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = if (barsVisible) 76.dp else 16.dp
+                )
         )
     }
 
@@ -292,7 +332,7 @@ private fun ReaderTopBar(
         Column(Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Serif),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -316,6 +356,64 @@ private fun ReaderTopBar(
     }
 }
 
+/**
+ * Slim bottom chrome: a page slider for scrubbing through the book. It shares the top bar's
+ * fade and auto-hide, so while reading, nothing but the page is on screen.
+ */
+@Composable
+private fun ReaderBottomBar(
+    currentPage: Int,
+    pagerIndex: Int,
+    onScrub: (Int) -> Unit,
+    onScrubInteraction: () -> Unit
+) {
+    var dragValue by remember { mutableStateOf<Float?>(null) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color.Transparent, MaterialTheme.colorScheme.background.copy(alpha = 0.94f))
+                )
+            )
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = currentPage.toString(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Slider(
+            value = dragValue ?: pagerIndex.toFloat(),
+            onValueChange = {
+                dragValue = it
+                onScrubInteraction()
+            },
+            onValueChangeFinished = {
+                dragValue?.let { onScrub(it.roundToInt()) }
+                dragValue = null
+            },
+            valueRange = 0f..(PageCoordinates.PAGE_COUNT - 1).toFloat(),
+            steps = PageCoordinates.PAGE_COUNT - 2,
+            modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
+            colors = SliderDefaults.colors(
+                activeTrackColor = MaterialTheme.brand.gold.copy(alpha = 0.7f),
+                inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f),
+                thumbColor = MaterialTheme.brand.gold,
+                activeTickColor = Color.Transparent,
+                inactiveTickColor = Color.Transparent
+            )
+        )
+        Text(
+            text = PageCoordinates.LAST_PAGE.toString(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
 @Composable
 private fun ReaderPage(
     page: Int,
@@ -331,18 +429,39 @@ private fun ReaderPage(
         value = PageBitmaps.load(page, pack)
     }
     ZoomableBox(onTap = onTap, onLongPress = onLongPress, onZoomChanged = onZoomChanged) {
-        val image = bitmap
-        if (image != null) {
-            Image(
-                bitmap = image,
-                contentDescription = stringResource(R.string.cd_quran_page_fmt, page),
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                filterQuality = FilterQuality.High,
-                colorFilter = tone.filter
-            )
-        } else if (!pack.hasPage(page)) {
-            MissingPage(page, onImportPages)
+        // The page rests on a calm margin like a mushaf on a stand: the margin is a
+        // shade deeper than the page paper, and a hairline gold frame hugs the page
+        // itself. The frame is sized to the displayed image, never to the screen,
+        // so it never crops or stretches the page.
+        BoxWithConstraints(Modifier.fillMaxSize().background(tone.margin)) {
+            val image = bitmap
+            if (image != null) {
+                val density = LocalDensity.current
+                val aspect = image.width.toFloat() / image.height.toFloat()
+                val widthPx = minOf(constraints.maxWidth.toFloat(), constraints.maxHeight * aspect)
+                val heightPx = widthPx / aspect
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(
+                            width = with(density) { widthPx.toDp() },
+                            height = with(density) { heightPx.toDp() }
+                        )
+                        .shadow(8.dp, RectangleShape, clip = false)
+                        .border(1.dp, MaterialTheme.brand.hairline, RectangleShape)
+                ) {
+                    Image(
+                        bitmap = image,
+                        contentDescription = stringResource(R.string.cd_quran_page_fmt, page),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds,
+                        filterQuality = FilterQuality.High,
+                        colorFilter = tone.filter
+                    )
+                }
+            } else if (!pack.hasPage(page)) {
+                MissingPage(page, onImportPages)
+            }
         }
     }
 }
