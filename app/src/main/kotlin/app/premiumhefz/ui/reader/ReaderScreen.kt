@@ -1,8 +1,11 @@
 package app.premiumhefz.ui.reader
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -243,8 +246,14 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
         AnimatedVisibility(
             visible = barsVisible,
             modifier = Modifier.align(Alignment.TopCenter),
-            enter = fadeIn(),
-            exit = fadeOut()
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(300)
+            ) + fadeIn(animationSpec = tween(300)),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(200)
+            ) + fadeOut(animationSpec = tween(200))
         ) {
             val juz = index.juzForPage(currentPage)
             val pageInJuz = index.pageInJuz(currentPage)
@@ -265,8 +274,14 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
         AnimatedVisibility(
             visible = barsVisible,
             modifier = Modifier.align(Alignment.BottomCenter),
-            enter = fadeIn(),
-            exit = fadeOut()
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = tween(300)
+            ) + fadeIn(animationSpec = tween(300)),
+            exit = slideOutVertically(
+                targetOffsetY = { it },
+                animationSpec = tween(200)
+            ) + fadeOut(animationSpec = tween(200))
         ) {
             ReaderBottomBar(
                 currentPage = currentPage,
@@ -319,7 +334,10 @@ private fun ReaderTopBar(
             .fillMaxWidth()
             .background(
                 Brush.verticalGradient(
-                    listOf(MaterialTheme.colorScheme.background.copy(alpha = 0.94f), Color.Transparent)
+                    listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.background.copy(alpha = 0.85f)
+                    )
                 )
             )
             .statusBarsPadding()
@@ -340,7 +358,7 @@ private fun ReaderTopBar(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -373,7 +391,10 @@ private fun ReaderBottomBar(
             .fillMaxWidth()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color.Transparent, MaterialTheme.colorScheme.background.copy(alpha = 0.94f))
+                    listOf(
+                        MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
+                        MaterialTheme.colorScheme.background
+                    )
                 )
             )
             .navigationBarsPadding()
@@ -383,7 +404,7 @@ private fun ReaderBottomBar(
         Text(
             text = currentPage.toString(),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurface
         )
         Slider(
             value = dragValue ?: pagerIndex.toFloat(),
@@ -409,7 +430,7 @@ private fun ReaderBottomBar(
         Text(
             text = PageCoordinates.LAST_PAGE.toString(),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
