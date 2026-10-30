@@ -185,6 +185,7 @@
     <string name="asma_retry">Retry</string>
     <string name="asma_offline">Offline · showing the saved names</string>
     <string name="asma_note">The 99 names below follow the popular traditional list. The count of ninety-nine is sound (Bukhari, Muslim), but this specific enumeration comes from Tirmidhi 3507, which al-Tirmidhi himself graded gharib — and it differs from that enumeration by one name: Al-Ahad appears here but not there (there, the count of 99 includes Allah itself). Allah’s names are not limited to these 99.</string>
+    <string name="asma_usage_note">The gold line under each name suggests when to call on Allah by that name, drawn from the name’s meaning. It is guidance, not a promised outcome — no counts or rewards are claimed for any name.</string>
     <string name="asma_footer">Source: AlAdhan API (aladhan.com). Bengali meanings are not yet available.</string>
 
     <!-- Dhikr & Tasbih -->

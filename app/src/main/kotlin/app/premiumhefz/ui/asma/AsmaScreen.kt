@@ -134,6 +134,12 @@ fun AsmaScreen(onBack: () -> Unit) {
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
+                                Spacer(Modifier.height(10.dp))
+                                Text(
+                                    text = stringResource(R.string.asma_usage_note),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                                 if (s.offline) {
                                     Spacer(Modifier.height(10.dp))
                                     Text(
@@ -201,6 +207,14 @@ private fun AsmaRow(name: AsmaName) {
                         text = name.meaningEn,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (name.usageEn.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = name.usageEn,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.brand.goldSoft
                     )
                 }
             }

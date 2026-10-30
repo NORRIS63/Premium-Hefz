@@ -12,7 +12,9 @@ data class AsmaName(
     val number: Int,
     val arabic: String,
     val transliteration: String,
-    val meaningEn: String
+    val meaningEn: String,
+    /** One short when-to-use line, drawn from the name's meaning. Never a promised outcome. */
+    val usageEn: String = ""
 )
 
 sealed interface AsmaState {
@@ -53,12 +55,36 @@ class AsmaRepository(context: Context) {
                     tmp.writeText(fetched, Charsets.UTF_8)
                     tmp.renameTo(cacheFile)
                 }
-                return@withContext AsmaState.Ready(parsed, offline = false)
+                return@withContext AsmaState.Ready(attachUsage(parsed), offline = false)
             }
         }
         val cached = readCached()?.let { runCatching { parse(it) }.getOrNull() }
-        if (cached != null) return@withContext AsmaState.Ready(cached, offline = true)
+        if (cached != null) return@withContext AsmaState.Ready(attachUsage(cached), offline = true)
         AsmaState.Unavailable
+    }
+
+    /** When-to-use lines bundled with the app (our own words, keyed by number). */
+    private var usageCache: Map<Int, String>? = null
+
+    private fun usageMap(): Map<Int, String> {
+        usageCache?.let { return it }
+        val map = runCatching {
+            val text = appContext.assets.open("asma_usage.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val obj = JSONObject(text)
+            val out = mutableMapOf<Int, String>()
+            obj.keys().forEach { key ->
+                key.toIntOrNull()?.let { out[it] = obj.optString(key) }
+            }
+            out
+        }.getOrDefault(emptyMap())
+        usageCache = map
+        return map
+    }
+
+    private fun attachUsage(names: List<AsmaName>): List<AsmaName> {
+        val usage = usageMap()
+        if (usage.isEmpty()) return names
+        return names.map { it.copy(usageEn = usage[it.number] ?: "") }
     }
 
     private fun readCached(): String? =
