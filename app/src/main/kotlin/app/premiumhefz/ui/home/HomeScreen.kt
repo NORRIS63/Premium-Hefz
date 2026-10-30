@@ -472,7 +472,7 @@ private fun ContinueCard(lastPage: Int?, index: QuranIndex, onContinue: (Int) ->
  * The Resume call-to-action, modelled on Aceternity's NoiseBackground button:
  * an animated noise-gradient rim flows around a solid deep-emerald pill.
  * The rim keeps the app's palette (gold, warm gold, teal-emerald) in place of
- * the web demo's pink/blue, and moves on short 5–7 s cycles so the flow is
+ * the web demo's pink/blue, and moves on short 2–3 s cycles so the flow is
  * clearly visible — unlike the card behind it, which stays near-still.
  */
 @Composable
@@ -531,19 +531,19 @@ private fun ButtonNoiseGradient(modifier: Modifier = Modifier) {
     val driftAState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(2_600, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(1_200, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftA"
     )
     val driftBState = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(3_600, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(1_600, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnDriftB"
     )
     val grainState = transition.animateFloat(
         initialValue = -10f,
         targetValue = 10f,
-        animationSpec = infiniteRepeatable(tween(3_000, easing = LinearEasing), RepeatMode.Reverse),
+        animationSpec = infiniteRepeatable(tween(1_400, easing = LinearEasing), RepeatMode.Reverse),
         label = "btnGrainShift"
     )
     // Hold still while the startup animation plays, then advance in fine
