@@ -4,13 +4,11 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,22 +21,16 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.premiumhefz.R
 import app.premiumhefz.domain.StartupMotion
-import app.premiumhefz.ui.components.octagramPath
 import app.premiumhefz.ui.theme.Emerald300
 import app.premiumhefz.ui.theme.Emerald900
-import app.premiumhefz.ui.theme.Gold400
 import app.premiumhefz.ui.theme.Gold500
-import app.premiumhefz.ui.theme.Ivory100
 import kotlinx.coroutines.delay
 
 private val GoldHighlight = Color(0xFFF3E4AE)
@@ -95,17 +87,13 @@ fun StartupOverlay(reducedMotion: Boolean, onFinished: () -> Unit) {
                 },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Canvas(Modifier.size(58.dp)) {
-                val c = Offset(size.width / 2f, size.height / 2f)
-                val r = size.minDimension / 2f * 0.92f
-                drawPath(octagramPath(c.x, c.y, r), Gold400, style = Stroke(width = 1.4.dp.toPx()))
-                drawPath(octagramPath(c.x, c.y, r * 0.62f), Gold400.copy(alpha = 0.6f), style = Stroke(width = 1.dp.toPx()))
-            }
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.startup_wordmark),
-                color = Ivory100,
-                style = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Light, letterSpacing = 1.6.sp)
+            // The full brand lockup, revealed by the same rising-line choreography
+            // (identityAlpha fade + rise) that used to reveal the drawn octagram.
+            Image(
+                painter = painterResource(R.drawable.brand_lockup),
+                contentDescription = null,
+                modifier = Modifier.width(260.dp),
+                contentScale = ContentScale.FillWidth
             )
         }
     }
