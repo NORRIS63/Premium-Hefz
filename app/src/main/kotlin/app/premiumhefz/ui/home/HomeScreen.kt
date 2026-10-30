@@ -67,6 +67,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
@@ -102,6 +106,7 @@ import app.premiumhefz.ui.LocalContainer
 import app.premiumhefz.ui.appViewModel
 import app.premiumhefz.ui.components.GoldProgress
 import app.premiumhefz.ui.components.QuickTile
+import app.premiumhefz.ui.components.SectionLabel
 import app.premiumhefz.ui.components.StarWatermark
 import app.premiumhefz.ui.components.WelcomeRibbon
 import app.premiumhefz.ui.theme.brand
@@ -225,7 +230,6 @@ fun HomeScreen(
         HomeHeader(state.pack)
         if (!state.pack.complete) PagesMissingCard(state.pack, onImportPages)
         ContinueCard(state.lastPage, index, onContinue)
-        TodayCard(state.pagesReadToday, state.dailyGoal, state.streak, vm::changeGoal)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             QuickTile(
                 label = stringResource(R.string.home_quick_read),
@@ -249,205 +253,83 @@ fun HomeScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
-        ProgressCard(state.distinctPagesRead, state.weekCounts, onOpenSurahProgress)
-        CalendarCard(state.activeDays)
-        PageOfDayCard(index, onContinue)
+        if (state.recentBookmarks.isNotEmpty()) {
+            RecentBookmarksRow(state.recentBookmarks, index, onContinue)
+        }
+        SectionLabel(stringResource(R.string.home_today))
+        TodayCard(state.pagesReadToday, state.dailyGoal, state.streak, vm::changeGoal)
         HadithDayCard(
             state = hadithDay,
             onOpen = { hadith -> onOpenHadithDetail(hadith.book.id, hadith.number) },
             onRetry = vm::retryHadith
         )
-        if (state.recentBookmarks.isNotEmpty()) {
-            RecentBookmarksRow(state.recentBookmarks, index, onContinue)
-        }
+        PageOfDayCard(index, onContinue)
+        SectionLabel(stringResource(R.string.home_progress_title))
+        ProgressCard(state.distinctPagesRead, state.weekCounts, onOpenSurahProgress)
+        CalendarCard(state.activeDays)
         JuzMapCard(state.distinctPages, index, onContinue)
-        Text(
-            text = stringResource(R.string.home_companion_title),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenSajdah,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
+        SectionLabel(stringResource(R.string.home_companion_title))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickTile(
+                label = stringResource(R.string.home_companion_sajdah),
+                onClick = onOpenSajdah,
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = "۩",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.brand.gold
                 )
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.home_companion_sajdah),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.home_companion_sajdah_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
-        }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenHadithLibrary,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
+            QuickTile(
+                label = stringResource(R.string.hadith_library_title),
+                onClick = onOpenHadithLibrary,
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(painterResource(R.drawable.ic_book), contentDescription = null, tint = MaterialTheme.brand.gold)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.hadith_library_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.hadith_library_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenRuqyah,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickTile(
+                label = stringResource(R.string.ruqyah_title),
+                onClick = onOpenRuqyah,
+                modifier = Modifier.weight(1f)
             ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.ruqyah_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.ruqyah_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+                Icon(Icons.Filled.Favorite, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+            QuickTile(
+                label = stringResource(R.string.asma_title),
+                onClick = onOpenAsma,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenAsma,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickTile(
+                label = stringResource(R.string.dhikr_title),
+                onClick = onOpenDhikr,
+                modifier = Modifier.weight(1f)
             ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.asma_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.asma_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+                Icon(Icons.Filled.Refresh, contentDescription = null, tint = MaterialTheme.brand.gold)
+            }
+            QuickTile(
+                label = stringResource(R.string.hifz_title),
+                onClick = onOpenHifz,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(painterResource(R.drawable.ic_bookmark), contentDescription = null, tint = MaterialTheme.brand.gold)
             }
         }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenDhikr,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickTile(
+                label = stringResource(R.string.revision_title),
+                onClick = onOpenRevision,
+                modifier = Modifier.weight(1f)
             ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.dhikr_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.dhikr_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
+                Icon(Icons.AutoMirrored.Filled.List, contentDescription = null, tint = MaterialTheme.brand.gold)
             }
-        }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenHifz,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.hifz_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.hifz_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
-            }
-        }
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            onClick = onOpenRevision,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.revision_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.revision_sub),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.brand.gold)
-            }
+            Spacer(Modifier.weight(1f))
         }
     }
     if (showWelcome) {
