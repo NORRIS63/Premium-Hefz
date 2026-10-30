@@ -468,19 +468,19 @@ private fun rememberReaderMotionStates(enabled: Boolean): ReaderMotionStates? {
         sweep = transition.animateFloat(
             initialValue = 0f,
             targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(9_000, easing = LinearEasing), RepeatMode.Reverse),
+            animationSpec = infiniteRepeatable(tween(2_000, easing = LinearEasing), RepeatMode.Reverse),
             label = "frameSweep"
         ),
         glowX = transition.animateFloat(
             initialValue = 0.2f,
             targetValue = 0.8f,
-            animationSpec = infiniteRepeatable(tween(14_000, easing = LinearEasing), RepeatMode.Reverse),
+            animationSpec = infiniteRepeatable(tween(3_000, easing = LinearEasing), RepeatMode.Reverse),
             label = "glowX"
         ),
         glowY = transition.animateFloat(
             initialValue = 0.25f,
             targetValue = 0.75f,
-            animationSpec = infiniteRepeatable(tween(19_000, easing = LinearEasing), RepeatMode.Reverse),
+            animationSpec = infiniteRepeatable(tween(4_000, easing = LinearEasing), RepeatMode.Reverse),
             label = "glowY"
         )
     )
@@ -518,10 +518,10 @@ private fun ReaderPage(
                         val cx = motionStates.glowX.value * size.width
                         val cy = motionStates.glowY.value * size.height
                         val span = if (size.width > size.height) size.width else size.height
-                        val radius = span * 0.65f
+                        val radius = span * 0.75f
                         drawCircle(
                             brush = Brush.radialGradient(
-                                colors = listOf(glowGold.copy(alpha = 0.22f), Color.Transparent),
+                                colors = listOf(glowGold.copy(alpha = 0.45f), Color.Transparent),
                                 center = Offset(cx, cy),
                                 radius = radius
                             ),
@@ -561,15 +561,15 @@ private fun ReaderPage(
                                         colors = listOf(
                                             frameHairline,
                                             frameHairline,
-                                            frameGold.copy(alpha = 0.90f),
-                                            frameGold.copy(alpha = 0.90f),
+                                            frameGold.copy(alpha = 1.00f),
+                                            frameGold.copy(alpha = 1.00f),
                                             frameHairline,
                                             frameHairline
                                         ),
                                         start = Offset(-w + s * 2f * w, -h),
                                         end = Offset(s * 2f * w, h)
                                     )
-                                    drawRect(brush = brush, style = Stroke(width = 1.dp.toPx()))
+                                    drawRect(brush = brush, style = Stroke(width = 4.dp.toPx()))
                                 }
                             } else {
                                 Modifier.border(1.dp, MaterialTheme.brand.hairline, RectangleShape)
