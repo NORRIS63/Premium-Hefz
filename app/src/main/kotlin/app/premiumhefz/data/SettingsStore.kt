@@ -12,7 +12,7 @@ enum class PageTone { AUTO, ORIGINAL, PAPER, NIGHT }
 
 data class AppSettings(
     val theme: ThemeMode = ThemeMode.SYSTEM,
-    val pageTone: PageTone = PageTone.AUTO,
+    val pageTone: PageTone = PageTone.ORIGINAL,
     val keepScreenOn: Boolean = true,
     val reduceMotion: Boolean = false,
     val readerMotion: Boolean = true,

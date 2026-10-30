@@ -518,10 +518,10 @@ private fun ReaderPage(
                         val cx = motionStates.glowX.value * size.width
                         val cy = motionStates.glowY.value * size.height
                         val span = if (size.width > size.height) size.width else size.height
-                        val radius = span * 0.55f
+                        val radius = span * 0.65f
                         drawCircle(
                             brush = Brush.radialGradient(
-                                colors = listOf(glowGold.copy(alpha = 0.10f), Color.Transparent),
+                                colors = listOf(glowGold.copy(alpha = 0.22f), Color.Transparent),
                                 center = Offset(cx, cy),
                                 radius = radius
                             ),
@@ -561,7 +561,8 @@ private fun ReaderPage(
                                         colors = listOf(
                                             frameHairline,
                                             frameHairline,
-                                            frameGold.copy(alpha = 0.60f),
+                                            frameGold.copy(alpha = 0.90f),
+                                            frameGold.copy(alpha = 0.90f),
                                             frameHairline,
                                             frameHairline
                                         ),
