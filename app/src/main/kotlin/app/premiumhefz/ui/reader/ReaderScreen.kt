@@ -1,6 +1,11 @@
 package app.premiumhefz.ui.reader
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -43,6 +48,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -57,6 +63,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -66,6 +74,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -165,6 +174,9 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
     val index = container.quranIndex
     val pack = container.pagePack
     val tone = rememberToneStyle(settings.pageTone)
+    // Ambient reader motion: on unless the user turned it off, and always off when
+    // Reduce motion is on. It never touches the page image itself (see ReaderPage).
+    val readerMotion = settings.readerMotion && !settings.reduceMotion
 
     val pagerState = rememberPagerState(
         initialPage = PageCoordinates.pagerIndex(PageCoordinates.coerce(startPage))
@@ -236,6 +248,7 @@ fun ReaderScreen(startPage: Int, onBack: () -> Unit, onImportPages: () -> Unit) 
                 pack = pack,
                 packVersion = packStatus.installed,
                 tone = tone,
+                motion = readerMotion,
                 onTap = { barsVisible = !barsVisible },
                 onLongPress = { toggleBookmarkFor(page) },
                 onZoomChanged = { zoomed = it },
@@ -435,12 +448,51 @@ private fun ReaderBottomBar(
     }
 }
 
+/**
+ * Ambient motion drivers. Only the [State] objects travel into draw modifiers, and
+ * they are read inside draw scopes — so the animation redraws the frame and the
+ * margin glow each frame without recomposing the page. Null when motion is off,
+ * in which case the page keeps its static hairline frame and no animation runs.
+ */
+private class ReaderMotionStates(
+    val sweep: State<Float>,
+    val glowX: State<Float>,
+    val glowY: State<Float>
+)
+
+@Composable
+private fun rememberReaderMotionStates(enabled: Boolean): ReaderMotionStates? {
+    if (!enabled) return null
+    val transition = rememberInfiniteTransition(label = "readerMotion")
+    return ReaderMotionStates(
+        sweep = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(tween(9_000, easing = LinearEasing), RepeatMode.Reverse),
+            label = "frameSweep"
+        ),
+        glowX = transition.animateFloat(
+            initialValue = 0.2f,
+            targetValue = 0.8f,
+            animationSpec = infiniteRepeatable(tween(14_000, easing = LinearEasing), RepeatMode.Reverse),
+            label = "glowX"
+        ),
+        glowY = transition.animateFloat(
+            initialValue = 0.25f,
+            targetValue = 0.75f,
+            animationSpec = infiniteRepeatable(tween(19_000, easing = LinearEasing), RepeatMode.Reverse),
+            label = "glowY"
+        )
+    )
+}
+
 @Composable
 private fun ReaderPage(
     page: Int,
     pack: PagePack,
     packVersion: Int,
     tone: ToneStyle,
+    motion: Boolean,
     onTap: () -> Unit,
     onLongPress: () -> Unit,
     onZoomChanged: (Boolean) -> Unit,
@@ -449,12 +501,36 @@ private fun ReaderPage(
     val bitmap by produceState<ImageBitmap?>(initialValue = PageBitmaps.peek(page), page, packVersion) {
         value = PageBitmaps.load(page, pack)
     }
+    val motionStates = rememberReaderMotionStates(motion)
     ZoomableBox(onTap = onTap, onLongPress = onLongPress, onZoomChanged = onZoomChanged) {
         // The page rests on a calm margin like a mushaf on a stand: the margin is a
         // shade deeper than the page paper, and a hairline gold frame hugs the page
         // itself. The frame is sized to the displayed image, never to the screen,
         // so it never crops or stretches the page.
         BoxWithConstraints(Modifier.fillMaxSize().background(tone.margin)) {
+            // Margin glow, drawn behind the page: the page image is opaque and drawn
+            // on top of it, so the glow can only ever show in the surround, never
+            // over the page itself.
+            if (motionStates != null) {
+                val glowGold = MaterialTheme.brand.gold
+                Box(
+                    Modifier.fillMaxSize().drawBehind {
+                        val cx = motionStates.glowX.value * size.width
+                        val cy = motionStates.glowY.value * size.height
+                        val span = if (size.width > size.height) size.width else size.height
+                        val radius = span * 0.55f
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                colors = listOf(glowGold.copy(alpha = 0.10f), Color.Transparent),
+                                center = Offset(cx, cy),
+                                radius = radius
+                            ),
+                            center = Offset(cx, cy),
+                            radius = radius
+                        )
+                    }
+                )
+            }
             val image = bitmap
             if (image != null) {
                 val density = LocalDensity.current
@@ -469,7 +545,35 @@ private fun ReaderPage(
                             height = with(density) { heightPx.toDp() }
                         )
                         .shadow(8.dp, RectangleShape, clip = false)
-                        .border(1.dp, MaterialTheme.brand.hairline, RectangleShape)
+                        .then(
+                            if (motionStates != null) {
+                                // Animated frame: a slow gleam travelling diagonally
+                                // across the frame. Same 1 dp footprint as the static
+                                // hairline it replaces, so it never crops the page.
+                                val frameGold = MaterialTheme.brand.gold
+                                val frameHairline = MaterialTheme.brand.hairline
+                                Modifier.drawWithContent {
+                                    drawContent()
+                                    val s = motionStates.sweep.value
+                                    val w = size.width
+                                    val h = size.height
+                                    val brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            frameHairline,
+                                            frameHairline,
+                                            frameGold.copy(alpha = 0.60f),
+                                            frameHairline,
+                                            frameHairline
+                                        ),
+                                        start = Offset(-w + s * 2f * w, -h),
+                                        end = Offset(s * 2f * w, h)
+                                    )
+                                    drawRect(brush = brush, style = Stroke(width = 1.dp.toPx()))
+                                }
+                            } else {
+                                Modifier.border(1.dp, MaterialTheme.brand.hairline, RectangleShape)
+                            }
+                        )
                 ) {
                     Image(
                         bitmap = image,

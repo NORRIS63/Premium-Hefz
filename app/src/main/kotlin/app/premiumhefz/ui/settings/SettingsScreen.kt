@@ -163,6 +163,12 @@ fun SettingsScreen() {
                 checked = settings.reduceMotion,
                 onCheckedChange = { checked -> vm.update { it.copy(reduceMotion = checked) } }
             )
+            SwitchRow(
+                title = stringResource(R.string.settings_reader_motion),
+                subtitle = stringResource(R.string.settings_reader_motion_hint),
+                checked = settings.readerMotion,
+                onCheckedChange = { checked -> vm.update { it.copy(readerMotion = checked) } }
+            )
 
             Spacer(Modifier.height(6.dp))
             SectionLabel(stringResource(R.string.settings_reminders))

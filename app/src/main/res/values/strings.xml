@@ -111,6 +111,8 @@
     <string name="settings_motion">Motion</string>
     <string name="settings_reduce_motion">Reduce motion</string>
     <string name="settings_reduce_motion_hint">Skips the opening animation.</string>
+    <string name="settings_reader_motion">Reader motion</string>
+    <string name="settings_reader_motion_hint">A slow gold shimmer on the page frame and a faint glow in the margin while reading. The page itself never moves.</string>
     <string name="settings_pages_status_fmt">%1$d of %2$d pages on this device</string>
     <string name="settings_about">About</string>
     <string name="settings_about_body">The Quran pages are the original page images from Hefz Quran, kept byte-identical. This app contains no separate Quran text. Quran pages work fully offline; Hadith and Asma ul Husna load online when available and fall back to the last loaded content offline.</string>
