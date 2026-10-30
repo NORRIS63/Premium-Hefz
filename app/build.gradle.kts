@@ -13,8 +13,24 @@ android {
         applicationId = "app.premiumhefz"
         minSdk = 23
         targetSdk = 35
-        versionCode = 102
+        versionCode = 103
         versionName = "1.0.2"
+    }
+
+    // Fixed release key (CI only): when KEYSTORE_FILE points at a real
+    // keystore, a "release" signing config is created from it; local builds
+    // without the env vars skip this and keep the debug key.
+    val releaseKeystore = System.getenv("KEYSTORE_FILE")?.takeIf { it.isNotEmpty() }?.let(::file)
+    val hasReleaseKey = releaseKeystore != null && releaseKeystore.exists()
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = releaseKeystore
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -22,11 +38,11 @@ android {
             // Optimized build for real use: R8 minification and optimization on.
             // Resource shrinking stays OFF on purpose — the Quran page pack is a
             // bundled asset and must never be a shrinking candidate.
-            // Signed with the debug key so it installs (and updates in place)
-            // exactly like the debug builds, until the project gets a dedicated
-            // release keystore.
+            // Signed with the project's fixed release key when its keystore is
+            // supplied (CI), so every build updates the previous one in place.
+            // Without it (local builds) the debug key is used instead.
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
